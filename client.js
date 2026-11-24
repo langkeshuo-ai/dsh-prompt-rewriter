@@ -84,7 +84,7 @@ window.__ModuleLoader__.load({
 			//     zero-gap row still keeps >=6px between the two, and overlap is impossible.
 			// `--dsh-pe-seat-nudge` stays as an opt-in hook for a theme that knows its own
 			// gap; it defaults to 0. A notice carries text, so it never shifts.
-			'.dsh-pe_root{display:flex;flex:0 0 auto;align-items:center;min-width:0;max-width:100%;',
+			'.dsh-pe_root{display:flex;flex:0 0 auto;align-items:center;min-width:0;max-width:100%;overflow:hidden;',
 			'margin-inline-end:6px;position:relative;transform:translateX(var(--dsh-pe-seat-nudge,0px))}',
 			// A notice carries text, so it drops the shift and bounds its own width.
 			'.dsh-pe_root[data-notice="true"]{max-width:172px;transform:none}',
@@ -142,7 +142,7 @@ window.__ModuleLoader__.load({
 			// ran into the model label, and a `cqw` cap collapsed to nothing when the
 			// row was sized to content. A fixed pixel budget on the seat is stable in
 			// both layouts; it lives with the seat's other notice rules above.
-			'.dsh-pe_notice{min-width:0;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;',
+			'.dsh-pe_notice{min-width:0;flex:0 1 auto;max-width:132px;overflow:hidden;text-overflow:ellipsis;',
 			'white-space:nowrap;font-size:11px;line-height:16px;',
 			'color:var(--dsw-alias-state-error-primary)}',
 			'.dsh-pe_notice[data-tone="info"]{color:var(--dsw-alias-label-secondary)}',
