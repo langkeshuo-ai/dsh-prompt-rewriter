@@ -83,11 +83,9 @@ window.__ModuleLoader__.load({
 			//   - a POSITIVE inline-end margin instead. It adds to whatever gap exists, so a
 			//     zero-gap row still keeps >=6px between the two, and overlap is impossible.
 			// `--dsh-pe-seat-nudge` stays as an opt-in hook for a theme that knows its own
-			// gap; it defaults to 0. A notice carries text, so it never shifts.
+			// gap; it defaults to 0.
 			'.dsh-pe_root{display:flex;flex:0 0 auto;align-items:center;min-width:0;max-width:100%;',
 			'margin-inline-end:6px;position:relative;transform:translateX(var(--dsh-pe-seat-nudge,0px))}',
-			// A notice carries text, so it drops the shift and bounds its own width.
-			'.dsh-pe_root[data-notice="true"]{max-width:172px;transform:none}',
 			// 22x22 hit target inside the 28px-tall toolbar row: comfortably clickable
 			// while still reading as a compact toolbar control.
 			'.dsh-pe_button{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;',
@@ -139,13 +137,7 @@ window.__ModuleLoader__.load({
 			//
 			// The whole seat is width-capped and the notice ellipsizes inside it. Both
 			// earlier attempts failed for a concrete reason: an uncapped inline notice
-			// ran into the model label, and a `cqw` cap collapsed to nothing when the
-			// row was sized to content. A fixed pixel budget on the seat is stable in
-			// both layouts; it lives with the seat's other notice rules above.
-			'.dsh-pe_notice{min-width:0;flex:0 1 auto;max-width:132px;overflow:hidden;text-overflow:ellipsis;',
-			'white-space:nowrap;font-size:11px;line-height:16px;',
-			'color:var(--dsw-alias-state-error-primary)}',
-			'.dsh-pe_notice[data-tone="info"]{color:var(--dsw-alias-label-secondary)}',
+			// 座位宽度恒为 22px 图标本身：行内不再渲染任何文字，因此输入前后位置不会变化。
 			// What the last run actually did: which rule set ran and what the model
 			// answered. Floated ABOVE the seat (absolute, pointer-events:none) so it can
 			// never disturb the fixed spacing of this row; it fades out by itself after
@@ -1831,7 +1823,6 @@ window.__ModuleLoader__.load({
 					className: 'dsh-pe_root',
 					'data-prompt-enhance': '1',
 					'data-context': showContextMark ? 'true' : 'false',
-					'data-notice': failure !== null || notice !== null ? 'true' : 'false',
 				},
 				h(
 					'button',
@@ -1850,12 +1841,9 @@ window.__ModuleLoader__.load({
 					// twisting tail, and the two utility states keep the outline icons.
 					busy ? h(WhaleTail) : canUndo ? h(UndoIcon) : failure !== null ? h(RetryIcon) : h(FishIcon),
 				),
-				// A failure keeps its reason on screen, inline and width-capped so it can
-				// never overlap the model label or be clipped by the composer card.
-				failure !== null && h('span', { className: 'dsh-pe_notice', 'data-tone': 'error', role: 'alert', title: failure }, failure),
-				notice !== null && !busy && failure === null ? h('span', { className: 'dsh-pe_notice', 'data-tone': 'info', title: notice }, notice) : null,
-				// Floated above the seat, never inline: this row's spacing is fixed by
-				// issue #9, so a status line must not be able to push the model label.
+				// 失败原因只走按钮自带的 title / aria-label（与增强图标的悬停提示同一套机制），
+				// 不再在行内渲染文字：行内文字会撑宽座位，导致图标相对麦克风漂移。
+				// 状态行仍是绝对定位：不参与行内排版，因此不会撑宽座位、不会引起漂移。
 				runStatus !== null && !busy && failure === null ? h('span', { className: 'dsh-pe_status', role: 'status' }, runStatus) : null,
 				// Kept for assistive tech only: the control itself is icon-only.
 				h('span', { className: 'dsh-pe_sr', role: 'status', 'aria-live': 'polite' }, status),

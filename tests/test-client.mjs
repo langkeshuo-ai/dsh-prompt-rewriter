@@ -609,7 +609,11 @@ await test('a clarification response leaves the original draft untouched', async
 	await sleep(20);
 	assert.equal(helper.writes.length, 0);
 	assert.equal(helper.state.draft, '诺奖终稿.docx');
-	assert.ok(flatten(mounted.rerender().tree).find((node) => node.props?.['data-tone'] === 'info'), 'clarification must be visible');
+	assert.ok(mounted.rerender().tree);
+	// 澄清说明不再占位渲染：它由按钮自身的悬停提示承担，座位宽度恒定。
+	const button = findButton(mounted.rerender().tree);
+	assert.match(String(button.props.title), /state\.noRewrite/u, 'clarification is surfaced through the tooltip');
+	assert.equal(flatten(mounted.rerender().tree).some((node) => node.props?.['data-tone'] === 'info'), false, 'no inline text may be rendered');
 });
 
 
@@ -937,14 +941,14 @@ await test('a failure shows its reason on screen, not only in title', async () =
 	await sleep(0);
 	const tree = mounted.rerender().tree;
 
-	// A visible notice element must exist, outside the visually hidden live region.
-	const notice = flatten(tree).find((node) => node.props?.className === 'dsh-pe_notice');
-	assert.ok(notice, 'a failed run must render a visible notice');
-	assert.equal(notice.props.role, 'alert');
-	assert.match(textOf(notice), /凭据缺失/u);
-	// It must not be the screen-reader-only span.
+	// 失败原因改由按钮自带的悬停提示与无障碍名称承担，行内不渲染任何文字，
+	// 这样座位宽度恒定，图标不会因失败提示而相对麦克风漂移。
+	const button = findButton(tree);
+	assert.match(String(button.props.title), /凭据缺失/u, '失败原因出现在悬停提示里');
+	assert.match(String(button.props['aria-label']), /凭据缺失/u, '无障碍名称同步带原因');
+	assert.equal(flatten(tree).some((node) => node.props?.className === 'dsh-pe_notice'), false, '行内不再渲染提示文字');
 	const hidden = flatten(tree).find((node) => node.props?.className === 'dsh-pe_sr');
-	assert.notEqual(notice, hidden, 'the reason must live in a visible element');
+	assert.ok(hidden !== undefined, '读屏播报仍然保留');
 });
 
 await test('a successful run in context mode is reported in the accessible name', async () => {
