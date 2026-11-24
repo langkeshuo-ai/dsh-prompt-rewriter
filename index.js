@@ -1364,6 +1364,9 @@ async function handle(scope, config, request, lifetime, windowCache) {
 					imagesSkipped += 1;
 				}
 			}
+		} else {
+			// 开关关闭：图片被整批忽略，必须如实计数，否则界面完全静默。
+			imagesSkipped += submittedImages.length;
 		}
 
 		const submittedFiles = Array.isArray(payload?.files) ? payload.files : [];

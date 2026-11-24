@@ -1514,7 +1514,12 @@ window.__ModuleLoader__.load({
 						// is currently mounted for this session. When nobody is mounted it is
 						// undefined and the parked result waits for the remount.
 						const apply = taskStore.ensure(sessionId).applyResult;
-						const outcome = typeof apply === 'function' ? apply(text, before, rev) : 'parked';
+						// 主机明确回「无需改动」时不要写回：写回的仍是原稿，却会凭空造出撤回态。
+						const outcome = payload?.kind === 'unchanged'
+							? 'unchanged'
+							: typeof apply === 'function'
+								? apply(text, before, rev)
+								: 'parked';
 						// Which rule set actually ran, and what the model answered. Built from
 						// the response the Host already sends — no second model call, and no
 						// guessing from the rewritten text.
@@ -1553,6 +1558,9 @@ window.__ModuleLoader__.load({
 							taskStore.patch(sessionId, { restore: { text: stripChipLabels(before, occurrencesRef.current), produced: null, pending: true } });
 						} else if (outcome === 'refused') {
 							taskStore.patch(sessionId, { restore: null, failure: t('state.refused') });
+						} else if (outcome === 'unchanged') {
+							// 没有写回，所以没有可撤回的东西：保持空闲，只留状态行与播报。
+							taskStore.patch(sessionId, { restore: null });
 						} else if (outcome === 'parked') {
 							// Nobody is mounted for this session: keep the result for the next mount.
 							taskStore.patch(sessionId, { result: { text, originRev: rev, origin: before }, restore: null });
