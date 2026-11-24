@@ -84,7 +84,7 @@ window.__ModuleLoader__.load({
 			//     zero-gap row still keeps >=6px between the two, and overlap is impossible.
 			// `--dsh-pe-seat-nudge` stays as an opt-in hook for a theme that knows its own
 			// gap; it defaults to 0. A notice carries text, so it never shifts.
-			'.dsh-pe_root{display:flex;flex:0 0 auto;align-items:center;min-width:0;max-width:100%;overflow:hidden;',
+			'.dsh-pe_root{display:flex;flex:0 0 auto;align-items:center;min-width:0;max-width:100%;',
 			'margin-inline-end:6px;position:relative;transform:translateX(var(--dsh-pe-seat-nudge,0px))}',
 			// A notice carries text, so it drops the shift and bounds its own width.
 			'.dsh-pe_root[data-notice="true"]{max-width:172px;transform:none}',
