@@ -2159,5 +2159,30 @@ await test('composer seat stays decoupled from host geometry', () => {
 	assert.equal(/standardControls|InputBar_module/u.test(cssRules), false, 'no host-internal selectors in CSS rules');
 });
 
+
+// 追加用例：失败时写入客户端错误日志（拦 console.error 作为可回读证据）。
+await test('a failed run writes a client-side error log', async () => {
+	requests.length = 0;
+	nextResponse = { status: 500, body: { ok: false, message: '模型网关超时' } };
+	const captured = [];
+	const original = console.error;
+	console.error = (...args) => { captured.push(args); };
+	try {
+		const helper = makeHelpers({ draft: '写个脚本' });
+		const mounted = mountComponent(composerRegistration(installPlugin()).component, helper.props);
+		findButton(mounted.tree).props.onClick();
+		await sleep(0);
+		findButton(mounted.rerender().tree);
+	} finally {
+		console.error = original;
+	}
+	assert.ok(captured.length >= 1, '失败必须写入一条客户端日志');
+	const flat = captured.map((args) => args.map((value) => typeof value === 'string' ? value : JSON.stringify(value)).join(' ')).join(' | ');
+	assert.match(flat, /\[dsh-prompt-rewriter\]/u, '日志带插件标识');
+	assert.match(flat, /enhance/u, '日志带操作类型');
+	assert.match(flat, /500|模型网关超时/u, '日志带错误信息');
+	assert.match(flat, /draftChars/u, '日志带必要上下文');
+});
+
 console.log(failures === 0 ? '\nALL CLIENT TESTS PASSED' : `\n${failures} CLIENT TEST(S) FAILED`);
 process.exitCode = failures === 0 ? 0 : 1;
