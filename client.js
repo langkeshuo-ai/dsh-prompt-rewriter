@@ -1496,8 +1496,8 @@ window.__ModuleLoader__.load({
 				const watchdog = setTimeout(() => {
 					const current = taskStore.ensure(sessionId);
 					if (current.controller !== controller) return;
+					// 只负责把状态拉回空闲：超时引发的失败由失败路径统一记录，这里不重复记。
 					controller.abort();
-					recordEnhanceError('timeout', t('state.failed'), { sessionId, waitedMs: RUN_WATCHDOG_MS });
 					taskStore.patch(sessionId, { phase: 'idle', controller: null, announce: t('state.cancelled') });
 				}, RUN_WATCHDOG_MS);
 				watchdog?.unref?.();
@@ -3186,7 +3186,7 @@ window.__ModuleLoader__.load({
 								'state.refused': '输入框没有接受替换，草稿保持不变。',
 								'state.deferred': '消息正在发送，改写结果已保留，输入框空闲后自动写入。',
 								'state.failed': '增强失败，草稿保持不变。',
-								'state.failedWith': '增强失败：{reason}。点击可重试。',
+								'state.failedWith': '点击可重新增强：上次失败原因是{reason}。',
 								'state.cancelled': '已停止增强，草稿保持不变。',
 								'state.stale': '增强已完成，但草稿在你离开期间被改动，结果未写入。',
 								'state.transport': '增强接口不可用（HTTP {status}），请确认插件已启用。',
@@ -3322,7 +3322,7 @@ window.__ModuleLoader__.load({
 								'state.refused': 'The composer refused the replacement; the draft is unchanged.',
 								'state.deferred': 'A message is in flight; the rewrite is kept and lands once the composer is idle.',
 								'state.failed': 'Enhancement failed; the draft is unchanged.',
-								'state.failedWith': 'Enhancement failed: {reason}. Click to retry.',
+								'state.failedWith': 'Click to enhance again. Last failure: {reason}.',
 								'state.cancelled': 'Enhancement stopped; the draft is unchanged.',
 								'state.stale': 'The rewrite finished, but the draft changed while you were away, so it was not applied.',
 								'state.transport': 'The enhancement endpoint is unavailable (HTTP {status}); check that the plugin is enabled.',

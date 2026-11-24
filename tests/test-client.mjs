@@ -2176,12 +2176,51 @@ await test('a failed run writes a client-side error log', async () => {
 	} finally {
 		console.error = original;
 	}
-	assert.ok(captured.length >= 1, '失败必须写入一条客户端日志');
+	assert.equal(captured.length, 1, '一次失败只写一条日志，不能重复');
 	const flat = captured.map((args) => args.map((value) => typeof value === 'string' ? value : JSON.stringify(value)).join(' ')).join(' | ');
 	assert.match(flat, /\[dsh-prompt-rewriter\]/u, '日志带插件标识');
 	assert.match(flat, /enhance/u, '日志带操作类型');
 	assert.match(flat, /500|模型网关超时/u, '日志带错误信息');
 	assert.match(flat, /draftChars/u, '日志带必要上下文');
+});
+
+await test('a refused write is logged once and keeps the retry affordance', async () => {
+	requests.length = 0;
+	nextResponse = { body: { ok: true, text: '增强结果' } };
+	const captured = [];
+	const original = console.error;
+	console.error = (...args) => { captured.push(args); };
+	let tree;
+	try {
+		const helper = makeHelpers({ draft: '写个脚本' });
+		helper.props.inputActions = {
+			insertText: () => false,
+			captureInsertion: () => ({ start: 0, end: 0, draftRev: helper.state.draftRev }),
+		};
+		const mounted = mountComponent(composerRegistration(installPlugin()).component, helper.props);
+		findButton(mounted.tree).props.onClick();
+		await sleep(0);
+		tree = mounted.rerender().tree;
+	} finally {
+		console.error = original;
+	}
+	assert.equal(captured.length, 1, '写回被拒只记一条日志');
+	const flat = captured[0].map((value) => (typeof value === 'string' ? value : JSON.stringify(value))).join(' ');
+	assert.match(flat, /write/u, '操作类型是写回');
+	const button = findButton(tree);
+	assert.equal(button.props['data-state'], 'error', '仍显示重试图标');
+	assert.match(String(button.props.title), /state\.failedWith/u, '悬停提示走失败文案');
+	assert.match(String(button.props['aria-label']), /state\.failedWith/u, '无障碍名称同步');
+});
+
+await test('the retry hover copy names the action and the reason in both languages', async () => {
+	const matches = [...source.matchAll(/'state\.failedWith':\s*'([^']+)'/gu)].map((match) => match[1]);
+	assert.equal(matches.length, 2, '中英文各一条');
+	for (const text of matches) {
+		assert.match(text, /\{reason\}/u, '必须带失败原因占位符');
+	}
+	assert.ok(matches.some((text) => /重新增强/u.test(text)), '中文说明点击会重新增强');
+	assert.ok(matches.some((text) => /enhance again/iu.test(text)), '英文说明点击会重新增强');
 });
 
 console.log(failures === 0 ? '\nALL CLIENT TESTS PASSED' : `\n${failures} CLIENT TEST(S) FAILED`);
