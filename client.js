@@ -967,6 +967,11 @@ window.__ModuleLoader__.load({
 			// the live phase even when it runs from an older closure.
 			const phaseRef = useRef(phase);
 			phaseRef.current = phase;
+			// 附件（图片/文件）的 ID 列表。附件不算 occurrences（芯片），所以整段
+			// setDraft 会把它们一起清掉；写回路径必须能看见"草稿里还有附件"这一事实。
+			// 走 ref 而不是依赖，避免为此重建 replaceDraft（它被投递效果依赖）。
+			const attachmentIdsRef = useRef(attachmentIds);
+			attachmentIdsRef.current = attachmentIds;
 
 			// NO abort on unmount. The component unmounts whenever the user switches
 			// away from this session, and aborting there is exactly what made the
@@ -993,6 +998,9 @@ window.__ModuleLoader__.load({
 						if (plan.segments.length !== 1 || occurrencesRef.current.length > 0) return false;
 						// setDraft writes the text alone; a command chip would be dropped.
 						if (claimTokenRef.current !== undefined && claimTokenRef.current !== null) return false;
+						// 不变量：增强结果必须与原草稿的附件等价。setDraft 只写文本，
+						// 附件会随之消失，而这里无法把附件写回去，所以宁可判为拒绝。
+						if (attachmentIdsRef.current.length > 0) return false;
 						if (typeof inputActions.setDraft !== 'function') return false;
 						inputActions.setDraft(clean);
 						return true;
