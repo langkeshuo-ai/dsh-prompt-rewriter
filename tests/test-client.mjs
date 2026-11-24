@@ -572,12 +572,16 @@ await test('shows an icon-only button once the draft has content', async () => {
 	assert.equal(button.props.title, 'label.idle');
 	const icon = flatten(button).find((node) => node.type === 'svg');
 	assert.ok(icon, 'expected an svg icon');
-	// The idle mark is the OFFICIAL fish logo (23.16:17.04 viewBox), sized by height.
-	assert.match(icon.props.viewBox, /^0 0 23\.16 17\.04$/u);
+	// The idle mark is the Claude starburst (local customization): a square
+	// 24-unit box drawn as four strokes, not the upstream fish path.
+	assert.match(icon.props.viewBox, /^0 0 24 24$/u);
 	assert.equal(icon.props.height, 14);
-	assert.ok(icon.props.width > icon.props.height, 'the fish is wider than tall');
-	const path = flatten(icon).find((node) => node.type === 'path');
-	assert.ok(path && path.props.d.length > 3000, 'official fish path must be reused verbatim');
+	assert.equal(icon.props.width, icon.props.height, 'the starburst is square');
+	assert.equal(icon.props.stroke, 'currentColor');
+	assert.equal(icon.props.strokeWidth, 3);
+	const paths = flatten(icon).filter((node) => node.type === 'path');
+	assert.equal(paths.length, 4, 'the starburst is four rays');
+	assert.ok(!paths.some((node) => node.props.d.length > 3000), 'the fish path must no longer be drawn');
 });
 
 await test('posts the draft and replaces it in place without sending', async () => {
@@ -823,7 +827,7 @@ await test('a chip-free draft still lands when the span write is refused', async
 	assert.equal(findButton(mounted.rerender().tree).props['data-state'], 'undo');
 });
 
-await test('a user pause restores the fish mark instead of showing retry', async () => {
+await test('a user pause restores the resting mark instead of showing retry', async () => {
 	requests.length = 0;
 	nextResponse = (url, init) => new Promise((resolve, reject) => {
 		init.signal.addEventListener('abort', () => reject(Object.assign(new Error('aborted'), { name: 'AbortError' })));
@@ -840,14 +844,14 @@ await test('a user pause restores the fish mark instead of showing retry', async
 	await sleep(0);
 	const after = findButton(mounted.rerender().tree);
 
-	// Icon: back to the resting fish, NOT the retry/error mark.
+	// Icon: back to the resting starburst, NOT the retry/error mark.
 	assert.equal(after.props['data-state'], 'idle', 'a pause must not enter the error state');
 	assert.equal(after.props['data-busy'], false);
 	assert.notEqual(after.props['data-state'], 'error');
-	// The rendered mark is the fish svg (official viewBox), not the retry arrow.
+	// The rendered mark is the idle starburst (square viewBox), not the retry arrow.
 	const mark = flatten(after).find((node) => node.type === 'svg');
 	assert.ok(mark, 'expected an svg mark');
-	assert.equal(mark.props.viewBox, '0 0 23.16 17.04', 'pause must fall back to the official fish');
+	assert.equal(mark.props.viewBox, '0 0 24 24', 'pause must fall back to the resting mark');
 	// Draft untouched, no undo offered.
 	assert.equal(helper.writes.length, 0, 'a pause must leave the draft unchanged');
 	assert.notEqual(after.props['data-state'], 'undo');
@@ -1409,7 +1413,7 @@ await test('the context dot uses the host accent token with a blue fallback', as
 // ---------------------------------------------------------------------------
 // Keyboard parity
 // ---------------------------------------------------------------------------
-// The shortcut must do exactly what clicking the fish does, so it publishes the
+// The shortcut must do exactly what clicking the resting mark does, so it publishes the
 // seat's own `onClick` rather than a private copy of the work.
 
 await test('the shortcut runs the same handler the button click runs', async () => {

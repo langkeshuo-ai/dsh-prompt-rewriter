@@ -99,6 +99,31 @@ filling it with `currentColor` so it inherits the button foreground.
 
 **This asset is excluded from the MIT grant** (see `LICENSE`).
 
+> **Local customization:** this fork no longer ships the DeepSeek mark. The
+> resting state is drawn as the Claude starburst instead — see section 3. The
+> upstream `FISH_VIEWBOX` / `FISH_PATH` constants remain in `client.js` but are
+> no longer rendered by `FishIcon()`.
+
+---
+
+## 3. Claude starburst mark — NOT MIT (local customization)
+
+| | |
+|---|---|
+| Where | `client.js` → `FishIcon()`; `icon.svg` |
+| Used for | the resting state of the composer button, and the plugin's own icon |
+| Source | drawn as four strokes in this fork — **not** copied path data |
+| Owner | Anthropic |
+| License as found | **trademark; no license granted** |
+
+Unlike the assets above, this mark is not reproduced byte-for-byte from a
+source package: it is a four-stroke approximation of the Anthropic/Claude
+starburst, coloured `#D97757`. It is present for personal, local identification
+only. It is excluded from the MIT grant, no trademark licence is granted, and
+its inclusion implies no affiliation with, endorsement by, or sponsorship from
+Anthropic. If you redistribute this fork, satisfy yourself that your use of the
+mark is acceptable in your jurisdiction.
+
 ---
 
 ## Summary
@@ -108,6 +133,7 @@ filling it with `currentColor` so it inherits the button foreground.
 | Plugin code (`index.js`, `client.js` logic, locale, styles) | MIT | yes |
 | Whale-tail contours (01Virex) | MIT | yes, with attribution retained |
 | DeepSeek brand mark | none found | **no** |
+| Claude starburst mark (local customization) | trademark, no licence | **no** |
 
 ## Takedown
 

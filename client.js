@@ -67,11 +67,11 @@ window.__ModuleLoader__.load({
 			'.dsh-pe_button[data-busy="true"]{color:var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6);cursor:progress}',
 			'.dsh-pe_button[data-state="undo"]{color:var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6)}',
 			'.dsh-pe_button[data-state="error"]{color:var(--dsw-alias-state-error-primary)}',
-			// The fish mark keeps the official 23.16:17.04 aspect ratio. Sizing by
-			// HEIGHT (not width) is what makes it read at the same weight as the 13px
-			// model label: a width-driven box left the glyph only ~9.6px tall and it
-			// looked shrunken next to the text.
-			'.dsh-pe_fish{display:block;height:14px;width:auto}',
+			// The idle mark is the Claude starburst (local customization), drawn
+			// square so its four strokes meet the box evenly. The colour is set here
+			// rather than by a state rule so the resting state stays brand orange
+			// while busy/undo/error keep the upstream state colours.
+			'.dsh-pe_fish{display:block;height:14px;width:14px;color:#D97757}',
 			// Busy state: the twist (spiral) tail. Each step swaps a complete outline,
 			// so the shape reads as a solid tail rolling about its axis. The keyframes
 			// are generated at mount time from TWIST_FRAMES (36 poses), stepped
@@ -413,25 +413,40 @@ window.__ModuleLoader__.load({
 		}
 
 		/**
-		 * Idle mark: the official DeepSeek "大肥鱼" brand mark, the same path the
-		 * sidebar brand slot and the composer hero draw. Height drives the size so
-		 * the glyph carries the same visual weight as the 13px model label; CSS owns
-		 * the final box, these attributes only give the SVG a sane intrinsic size.
+		 * Idle mark: the Claude starburst — a local customization of upstream
+		 * v1.9.0, which draws the DeepSeek "大肥鱼" brand mark here instead.
+		 *
+		 * The glyph keeps the upstream box (14px) so it still carries the same
+		 * visual weight as the 13px model label, and it keeps the upstream class
+		 * name so the state styles above apply untouched. Only the drawing and
+		 * the colour changed; the mount point, states and behaviour did not.
 		 */
 		function FishIcon() {
 			const box = 14;
+			// Four strokes rather than a filled path: filled diagonals pick up
+			// hairline gaps at 14px, while round caps stay crisp and inherit the
+			// Claude orange (#D97757) from CSS.
+			const rays = [
+				'M12 2.2V21.8',
+				'M2.2 12H21.8',
+				'M5.1 5.1L18.9 18.9',
+				'M18.9 5.1L5.1 18.9',
+			];
 			return h(
 				'svg',
 				{
 					className: 'dsh-pe_fish',
-					width: Math.round(box * FISH_RATIO * 100) / 100,
+					width: box,
 					height: box,
-					viewBox: FISH_VIEWBOX,
+					viewBox: '0 0 24 24',
 					fill: 'none',
+					stroke: 'currentColor',
+					strokeWidth: 3,
+					strokeLinecap: 'round',
 					'aria-hidden': true,
 					focusable: 'false',
 				},
-				h('path', { d: FISH_PATH, fill: 'currentColor' }),
+				rays.map((d, i) => h('path', { key: i, d })),
 			);
 		}
 

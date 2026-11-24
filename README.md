@@ -206,6 +206,42 @@ profile 插件行的 `config` 全部可选。前九项由设置页托管，后�
     historyMessageChars: 4000  # 单条历史字符上限
 ```
 
+## 本地定制说明（基于上游 v1.9.0）
+
+本仓库是 [huaguoxingkong/dsh-prompt-rewriter](https://github.com/huaguoxingkong/dsh-prompt-rewriter) **v1.9.0** 的本地定制版：只改了输入框右侧增强按钮的图标，其余功能与上游一致。上游作者署名与 MIT 许可证见 [AUTHORS](AUTHORS) 与 [LICENSE](LICENSE)。
+
+### 代码层改动（唯一一处）
+
+| 文件 | 位置 | 内容 |
+|---|---|---|
+| `client.js` | `.dsh-pe_fish` 样式（约 74 行） | `height:14px;width:auto` → `height:14px;width:14px;color:#D97757` |
+| `client.js` | `FishIcon()`（约 420 行） | DeepSeek 大肥鱼实心路径 → 四射线星爆描边（`viewBox 0 0 24 24`、`strokeWidth:3`） |
+| `icon.svg` | 整文件 | 同步替换为同形状、`#D97757` 描边 |
+| `tests/test-client.mjs` | 两处图标断言 | 随形状更新（方形 `0 0 24 24`、四条射线、无上游鱼形路径），其余用例未改 |
+
+纯图形改动为 `15 insertions(+), 4 deletions(-)`；另重写了两处因此失真的注释（「官方大肥鱼」与实际绘制的星爆不符），故 `client.js` 在本提交中合计 `27 insertions(+), 12 deletions(-)`。
+
+**未改动**：交互机制完全沿用上游——`conversation.input.right` 槽挂载（`id: prompt-enhance`、`order: 50`）、`busy → undo → error → idle` 四态按钮、设置页、全局快捷键（默认关闭）、上下文与附件开关、规则集切换。DOM 结构、类名与状态属性也未变，只换了绘制内容。
+
+### 配置层差异（非代码）
+
+以下属于运行时配置，**不在本仓库代码内**，记录于此仅为可复现：
+
+```yaml
+# ~/.dsh/profiles/desktop/cordis.patch.yml
+- id: dsh-prompt-rewriter
+  config:
+    useCustomModel: true
+    enhanceProvider: magpie
+    enhanceModel: trae-cn/deepseek-v4.1-flash-max
+```
+
+对照上游默认值（`index.js` → `DEFAULTS`）：`useCustomModel: false`、`enhanceProvider: ''`、`enhanceModel: ''`（空值表示跟随当前会话模型）。即本地把增强请求固定到 Magpie 网关上的指定模型。
+
+### 商标说明
+
+按钮中的四射线星爆是 Anthropic/Claude 的品牌标记，仅用于个人本地识别；商标归 Anthropic 所有，本仓库不主张任何权利，也不表示 Anthropic 的认可或授权。详见 [NOTICE.md](NOTICE.md) 第 3 节。
+
 ## 工作原理
 
 | 半边 | 文件 | 职责 |
