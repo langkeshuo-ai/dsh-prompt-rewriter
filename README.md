@@ -2,13 +2,14 @@
 
 [English](README.en.md) | 中文
 
-[![npm](https://img.shields.io/npm/v/dsh-prompt-rewriter.svg)](https://www.npmjs.com/package/dsh-prompt-rewriter)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/huaguoxingkong/dsh-prompt-rewriter)
-[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
-[![DSH Plugin Hub](https://dshpluginhub.ai/badges/plugins/dsh-prompt-rewriter.svg)](https://dshpluginhub.ai/plugins/dsh-prompt-rewriter)
-[![DeepSeek Harness plugins](https://deepseekharnessplugins.com/api/badge/huaguoxingkong/dsh-prompt-rewriter)](https://deepseekharnessplugins.com/plugins/huaguoxingkong/dsh-prompt-rewriter)
-[![dsh.so risk: low](https://cdn.dsh.so/badge/dsh-prompt-rewriter.svg)](https://www.dsh.so/artifact/dsh-prompt-rewriter/?ref=badge)
+
+这是 **langkeshuo-ai 的定制分叉版**，基于上游 v1.9.0，保留橙色 Claude 星爆图标，并继续修复附件写回、卡死、错误记录和设置页入口。
+
+- **当前主线**：[main](https://github.com/langkeshuo-ai/dsh-prompt-rewriter/tree/main)，统一承载完整定制功能和本仓库文档。
+- **先看时间线**：[TIMELINE.md](TIMELINE.md)，区分 10 月开始的上游历史、11 月 24 日开始的定制提交与仓库创建日期。
+- **版本与安装约定**：[VERSIONING.md](VERSIONING.md)。主线沿用上游 `1.9.1-dev.1` 版本号，旧定制分支为 `1.9.0`；确认具体构建时同时看来源和完整提交哈希。
+- npm 同名包与旧市场徽章对应上游；本定制版请使用下文指定的仓库与分支。
 
 把输入框里那句没头没尾的草稿，原地改成能直接执行的任务说明。
 **只改内容，不发送、不运行。** 不满意就 `Ctrl+Z` 回去。
@@ -17,7 +18,9 @@
 
 ---
 
-![点一下输入框右侧的鲸鱼尾巴图标，草稿原地变成完整提示词](https://cdn.jsdelivr.net/npm/dsh-prompt-rewriter/docs/images/01-hero.gif)
+> 下方配图沿用上游历史演示，图标和设置入口以本定制版说明为准；它们不是本 fork 新版本的界面截图。
+
+![上游历史演示：点一下输入框右侧的鲸鱼尾巴图标，草稿原地变成完整提示词](https://cdn.jsdelivr.net/npm/dsh-prompt-rewriter/docs/images/01-hero.gif)
 
 ## 它替你补上了什么
 
@@ -38,7 +41,7 @@
 ## 怎么用
 
 1. 在输入框里写下草稿，多短都行。
-2. 点输入栏右侧那一排控件里的**鲸鱼尾巴图标**（带蓝色小圆点表示会参考上下文）。它和模型选择器、发送按钮同属右侧控件区，中间可能还有其它插件的按钮；输入框为空时它不出现。
+2. 点输入栏右侧那一排控件里的**橙色 Claude 星爆图标**（带蓝色小圆点表示会参考上下文）。它和模型选择器、发送按钮同属右侧控件区，中间可能还有其它插件的按钮；输入框为空时它不出现。
 3. 片刻之后（快慢取决于所选的模型），草稿被换成改写后的提示词。
 4. 不满意？`Ctrl+Z`，或点按钮变成的回退箭头。
 
@@ -84,10 +87,10 @@
 
 | 状态 | 你看到的 | 意味着 |
 |---|---|---|
-| 空闲 | 静止的鲸鱼尾巴 | 可以点 |
-| 改写中 | 鱼尾快速旋转 | 在跑；再点一下是取消 |
+| 空闲 | 橙色 Claude 星爆 | 可以点 |
+| 改写中 | 按钮原位显示旋转动效 | 在跑；再点一下是取消 |
 | 完成 | 变成回退箭头 | 一键还原，或用 `Ctrl+Z` |
-| 失败 | 红色重试图标 + 原因 | 原因就在按钮旁边，不用翻日志 |
+| 失败 | 红色重试图标 | 悬停查看原因，设置页可查看当前页面的错误记录 |
 
 ## 三个容易搞混的地方
 
@@ -131,35 +134,45 @@
 - 关掉模型开关不会清空你的选择，重新打开还是同一个。
 - 上传中的图片或超出附件服务单图/单消息限额的图片会被跳过，状态区会告诉你少读了几张。不会因为一张图让整次改写失败。
 - 附件超出数量或大小上限时会跳过，并在结果状态中提示。
-- 设置页右上角显示**当前版本号**，点一下会打开项目主页。遇到问题时先看一眼版本，反馈时也更好定位。
+- 设置页右上角以纯文本显示**当前版本号**。确认定制构建时，还要核对仓库分支和提交哈希。
 - **自定义规则**：规则版本下拉里选「自定义：规则名」即生效。点「＋ 添加规则」会给出两栏——上面一段**元提示词**（可一键复制，剪贴板不可用时自动全选并提示按 Ctrl+C），把它发给你自己的 AI，AI 会按你的规则、记忆和习惯生成一套只属于你的增强规则；把它生成的正文粘回下面的框里，起个名字保存即可参与增强。最多 10 条、单条正文 4000 字符。列表里每条都能「停用 / 启用」；**停用或删除正在用的那条时**，选中项会在同一次保存里落回「旧版」，不会留下悬空选择（手动改配置把在用的规则标成停用会被拒绝；运行时遇到这种脏状态也按旧版处理）。
-- 顶上一行是入口：「点个 Star ⭐ · 遇到问题？提 issue ↗」，分别进项目主页与本项目的 issue 列表。
-- 底部「更新日志」按版本折叠，默认展开当前版本；内容取自随包发布的 `CHANGELOG.md`，不联网也能看。
+- 当前定制版已移除指向上游的 Star、issue 与更新日志入口。
+- 「错误日志」记录当前页面中的增强失败、写回失败和超时；可以清空，刷新页面后记录也会清空。
 
 ## 安装
 
-需要 DeepSeek Harness，`node >= 22`。**首次安装后重启一次 Harness**：宿主半边（增强接口与提示词规则）只在宿主启动时加载。装好之后只改 `client.js`（按钮、交互、提示文案）不必重启——Harness 的 client HMR 每 500ms 轮询插件的前端 bundle，变更经 `/plugins/events` 推送到已打开的窗口并就地替换，通常 1 秒内生效；刷新窗口只是兜底。
+需要 DeepSeek Harness，`node >= 22`。**首次安装后完全退出并重新打开 Harness**：增强接口与提示词规则在宿主启动时加载。仅前端变化能否热加载取决于实际宿主版本与启动方式；本仓库不保证各电脑使用相同的热加载配置。
 
-### 从 npm（推荐）
-
-```sh
-dsh plugin --profile web add dsh-prompt-rewriter      # Web 版
-dsh plugin --profile desktop add dsh-prompt-rewriter  # 桌面版
-```
-
-用你实际在跑的那个 profile。插件是 web 平台的前端插件，两种都能用。
-
-### 从 GitHub 源码
+### 取得本仓库的定制版
 
 ```sh
-dsh plugin --profile web add github:huaguoxingkong/dsh-prompt-rewriter
+git clone --branch main https://github.com/langkeshuo-ai/dsh-prompt-rewriter.git
+cd dsh-prompt-rewriter
+npm install --ignore-scripts --omit=dev --legacy-peer-deps --package-lock=false
+git log -1 --format='%H %cI %s'
 ```
 
-源码安装会跑构建步骤，首次可能要求你授权。只对你信任的包给这个权限。
+本次已将完整定制线归入默认 `main`。历史分支继续保留作为追溯基线；新安装统一使用本仓库 `main`，避免误用上游 npm 包。源码已包含可加载的前后端入口。
 
-### 从 Release 的 zip
+### 加入实际使用的 profile
 
-到 [Releases](https://github.com/huaguoxingkong/dsh-prompt-rewriter/releases) 下载 zip，解压后 `npm install && dsh plugin --profile web add .`。
+对于 CLI 管理的 Web profile：
+
+```sh
+dsh plugin --profile web add /absolute/path/to/dsh-prompt-rewriter
+```
+
+若桌面版提示 `profile "desktop" is managed exclusively by the Electron application`，通过桌面应用管理插件，不反复重跑相同 CLI 命令。本机已有源码链接时，更新的是链接目标目录；核验方式见 [VERSIONING.md](VERSIONING.md)。
+
+更新现有定制分支：
+
+```sh
+git switch main
+git pull --ff-only origin main
+npm test
+```
+
+包含宿主或规则文件变化时，完全退出并重新打开 DSH。npm 的同名包和上游 Release 不作为本 fork 的安装来源。
 
 ## 常见问题
 
@@ -206,6 +219,19 @@ profile 插件行的 `config` 全部可选。前九项由设置页托管，后�
     historyMessageChars: 4000  # 单条历史字符上限
 ```
 
+## 本地定制说明
+
+本仓库基于上游 v1.9.0。最初的 `local/anthropic-icon-1.9.0` 分支只换图标；后续定制在 `remove-upstream-links` 上推进，本次再归并到 `main`，所以“只改图标、其余完全一致”已经不是当前状态。
+
+- 空闲按钮为橙色 Claude 星爆，图标基线保留在历史分支中。
+- 附件写回保护、无需改动结果处理、跳过图片计数、120 秒请求看门狗和错误记录陆续加入。
+- 失败提示改为悬停显示，并修复位置漂移与溢出裁剪。
+- 设置页移除了指向上游的入口和更新日志面板，保留纯文本版本号。
+
+完整日期、提交与分支关系见 [TIMELINE.md](TIMELINE.md)，功能变化见 [CHANGELOG.md](CHANGELOG.md)。模型选择属于各电脑的运行时配置，在设置页按实际可用模型选择；仓库不要求所有电脑固定使用同一个渠道或模型。
+
+上游作者署名与许可见 [AUTHORS](AUTHORS)、[LICENSE](LICENSE)。Claude 星爆归属见 [NOTICE.md](NOTICE.md)。
+
 ## 工作原理
 
 | 半边 | 文件 | 职责 |
@@ -235,12 +261,12 @@ profile 插件行的 `config` 全部可选。前九项由设置页托管，后�
 
 | 改了什么 | 生效方式 | 要不要重启宿主 |
 | --- | --- | --- |
-| `client.js`（按钮、交互、提示文案、样式） | client HMR 每 500ms 轮询前端 bundle，变更经 `/plugins/events` 推送，窗口就地替换该插件条目 | 不要；刷新窗口只是兜底 |
+| `client.js`（按钮、交互、提示文案、样式） | 宿主启用 client HMR 时可替换前端资源 | 依实际宿主配置；必要时刷新或重启 |
 | `index.js`、`*-rules.mjs`（增强接口、提示词规则、设置存储） | 宿主启动时一次性 import | 要 |
 
-client HMR 由 `@deepseek-ai/dsh-client-hmr` 提供，Web 组合里始终挂载；它与宿主侧的 `hmr` 是两套东西——本机 profile 把宿主 `hmr` 设成了 `disabled: true`（见 `cordis.patch.yml` 里的注释），所以宿主**代码**没有热重载。设置页里改的配置项仍会立即生效（走设置服务，不经文件监听）；手工改 `cordis.patch.yml` 才需要重启。
+客户端资源重载与宿主代码加载是两件事，须分别核验。不同电脑的 profile 配置不随本仓库同步；设置页保存的选项通过宿主设置服务生效，文件中的宿主或规则改动则需重启。
 
-**单元测试不随 npm 包发布。** 仓库里有完整的 `tests/` 与 `scripts/gate.mjs`，但它们依赖宿主私有的 `@deepseek-ai/schemastery`、宿主 React 副本与本机 profile 目录结构，克隆下来直接跑会失败——所以只留在仓库里，不进 npm 包。发布前本地跑一遍，过了才发。
+**单元测试不随 npm 包发布。** 安装运行时依赖后，`npm test` 运行 Host、Client、Units、Settings 四组测试，使用替身宿主与 React，不会调用真实模型。历史发布门禁与打包另见 [VERSIONING.md](VERSIONING.md)；本轮仓库整理不执行发布。
 
 ```sh
 node --check index.js            # 语法

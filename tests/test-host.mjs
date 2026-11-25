@@ -977,15 +977,9 @@ await test('settings GET also reports the package version and project URL', asyn
 
 	const manifest = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8'));
 	assert.equal(body.about.version, manifest.version, 'version must equal the manifest version');
-	// Derive the expected URL from the manifest too: asserting a literal would make this
-	// test a second place a rename has to be remembered.
-	const expected = String(manifest.repository?.url ?? '')
-		.replace(/^git\+/u, '')
-		.replace(/\.git$/u, '');
-	assert.equal(body.about.url, expected, 'URL must be the browsable project page from the manifest');
-	assert.equal(body.about.url.startsWith('https://github.com/'), true, 'it must be a github.com project page');
-	assert.equal(body.about.url.includes('git+'), false, 'the git+ prefix must be stripped');
-	assert.equal(body.about.url.endsWith('.git'), false, 'the .git suffix must be stripped');
+	// This build is a fork: the settings page must not hand out the upstream project
+	// page, so the payload carries the version and nothing else.
+	assert.equal('url' in body.about, false, 'no project URL is published any more');
 });
 
 await test('settings POST persists through the settings service', async () => {
@@ -1557,73 +1551,20 @@ await test('a rewrite is applied even when it omits a detail from the draft', as
 	assert.equal(result.json.reason, undefined);
 });
 
-await test('settings exposes the shipped changelog as Chinese-only published versions', async () => {
-	// The panel's single source of truth is CHANGELOG.md shipped in the package.
-	// Versions come from that file; only three-part release versions are accepted.
-	const { ctx, routes } = makeCtx({ llm: fakeLlm({ textParts: ['x'] }) });
-	ctx.settings = { update: async () => {} };
-	ctx.fiber = { entry: { options: { id: 'dsh-prompt-rewriter' } } };
-	plugin.apply(ctx, {});
-	const route = routeByPath(routes, '/api/prompt-enhance/settings');
-	const response = await route.fetch(new Request('http://x/api/prompt-enhance/settings'));
-	const body = await response.json();
-	assert.equal(body.ok, true);
-	assert.ok(Array.isArray(body.changelog), 'changelog is an array');
-	assert.ok(body.changelog.length >= 11, 'all shipped releases are listed');
-	// Derived from the manifest: a release bumps package.json, not this test.
-	// A dev line (`1.8.4-dev.1`) keeps the newest changelog entry at the last
-	// published release, so compare numerically instead of for equality; the entry
-	// must still never be NEWER than the manifest.
-	const shipped = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8'));
-	const parseVer = (v) => v.replace(/-.*$/u, '').split('.').map(Number);
-	const [maj, min, pat] = parseVer(shipped.version);
-	const [cMaj, cMin, cPat] = parseVer(body.changelog[0].version);
-	const notNewer = cMaj < maj || (cMaj === maj && (cMin < min || (cMin === min && cPat <= pat)));
-	assert.ok(notNewer, `newest changelog entry ${body.changelog[0].version} must not exceed ${shipped.version}`);
-	for (const entry of body.changelog) {
-		assert.match(entry.version, /^\d+\.\d+\.\d+$/u, 'published versions only');
-		assert.ok(entry.items.length > 0, 'each version has Chinese entries');
-		// Keep a Changelog 1.1.0: a released section carries its date. The panel lists
-		// only dated sections, so anything without one cannot read as published.
-		assert.match(entry.date, /^\d{4}-\d{2}-\d{2}$/u, 'every listed version is dated');
-		assert.equal('dev' in entry, false, 'no dev flag is exposed any more');
-	}
-	// Newest first. As of this build 1.9.0 IS released, so it is the newest listed
-	// version and its bullets belong in the panel; the empty `[Unreleased]` heading
-	// above it still must never surface as a release of its own.
-	assert.equal(body.changelog[0].version, '1.9.0', 'the newest entry is the newest published release');
-	assert.equal(body.changelog[0].date, '2026-11-22', 'the release carries the date it shipped with');
-	const listed = body.changelog.map((entry) => entry.version);
-	assert.equal(listed.includes('1.9.0'), true, '1.9.0 is a published version now');
-	assert.equal(listed.includes('1.9.1'), false, 'a version nobody released is not invented');
-	// Its bullets must appear in the list rather than being dropped with the heading.
-	const text = body.changelog.flatMap((entry) => entry.items).join('\n');
-	assert.match(text, /快捷键服务缺失时插件不再整体失效/u, 'Chinese entries are kept');
-	assert.match(text, /上传文件或链接后改写结果不再被拒绝/u, 'the 1.7.0 entry is present');
-	assert.match(text, /自定义规则/u, 'the 1.9.0 custom-rule entry is listed');
-	assert.equal(/The plugin no longer goes dormant/u.test(text), false, 'English blocks are skipped');
-});
-
-await test('changelog bullets reach the panel as plain text, even where the file holds Markdown', async () => {
-	// Older published sections carry inline code spans; the panel has no Markdown
-	// renderer, so the read path unwraps them. The shipped file is never rewritten:
-	// the release body and the A3/B7 checks compare it byte for byte.
-	const shipped = fs.readFileSync(path.join(REPO_ROOT, 'CHANGELOG.md'), 'utf8');
-	assert.ok(shipped.includes('`'), 'this case only means something while the file still holds Markdown');
+await test('the settings payload carries no changelog', async () => {
+	// The settings page no longer renders release notes. This build is a fork whose
+	// own history is not the upstream file those notes came from, so the Host neither
+	// parses nor ships it, and the version is the only package fact it reports.
 	const { ctx, routes } = makeCtx({ llm: fakeLlm({ textParts: ['x'] }) });
 	ctx.settings = { update: async () => {} };
 	ctx.fiber = { entry: { options: { id: 'dsh-prompt-rewriter' } } };
 	plugin.apply(ctx, {});
 	const route = routeByPath(routes, '/api/prompt-enhance/settings');
 	const body = await (await route.fetch(new Request('http://x/api/prompt-enhance/settings'))).json();
-	const items = body.changelog.flatMap((entry) => entry.items);
-	assert.ok(items.length > 0, 'the panel lists entries');
-	assert.deepEqual(items.filter((item) => /[*`]/u.test(item)), [], 'no bullet carries a Markdown marker');
-	const old = body.changelog.find((entry) => entry.version === '1.8.4');
-	assert.ok(old !== undefined, 'the 1.8.4 section is still listed');
-	assert.equal(old.items.some((item) => item.includes('**')), false, 'the 1.8.4 section renders without asterisks');
+	assert.equal(body.ok, true);
+	assert.equal(body.changelog, undefined, 'no changelog reaches the page');
+	assert.equal(body.about.version !== undefined, true, 'the version still ships');
 });
-
 await test('the newest section declares its language blocks the way the release gate reads them', async () => {
 	// release-gate.mjs only recognises `**中文**` / `**English**`, and the release
 	// body is extracted through them. A section that spells them as plain text
@@ -1951,9 +1892,10 @@ await test('the settings route publishes the file policy it enforces', async () 
 	assert.equal(payload.fileLimits.maxFilesPerMessage, 2);
 	assert.equal(payload.fileLimits.textPreviewChars, 6000);
 	assert.equal(payload.fileLimits.maxFileNames, 8);
-	assert.ok(payload.about !== undefined && payload.changelog !== undefined, 'the settings page still gets its copy');
-	// The composer asks for the slim view: the changelog and the about text are the
-	// bulk of this payload and the composer never renders them.
+	assert.equal(payload.about !== undefined, true, 'the settings page still gets its copy');
+	assert.equal(payload.changelog, undefined, 'release notes are no longer published');
+	// The composer asks for the slim view: the version line is the settings page's
+	// own copy and the composer never renders it.
 	const slim = await (await route.fetch(new Request('http://x/api/prompt-enhance/settings?scope=composer', { method: 'GET' }))).json();
 	assert.equal(slim.ok, true);
 	assert.equal(slim.about, undefined);

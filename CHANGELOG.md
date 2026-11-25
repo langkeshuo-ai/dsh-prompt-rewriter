@@ -1,11 +1,42 @@
 # Changelog
 
-本项目的所有重要改动都记录在本文件。
+本文件保留继承自上游的版本日志，并在 `[Unreleased]` 记录本 fork 的定制变化。下方已有版本号和日期属于上游历史，不表示本 fork 在当日发布。完整提交与分支时间线见 [TIMELINE.md](TIMELINE.md)。
 
-格式遵循 [Keep a Changelog 1.1.0](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/)。
-开发期改动写在 `[Unreleased]` 段，发布时改名为 `## [X.Y.Z] - YYYY-MM-DD`；设置页的更新日志只列已发布的正式版本。
+格式参考 [Keep a Changelog 1.1.0](https://keepachangelog.com/zh-CN/1.1.0/)，版本与发布约定见 [VERSIONING.md](VERSIONING.md)。定制版的设置页已移除更新日志入口。
 
 ## [Unreleased]
+
+**中文**
+
+### 新增
+
+- 2026-11-24：输入框空闲标记改为橙色 Claude 星爆；增强请求增加 120 秒客户端看门狗，避免按钮长期卡在运行态。
+- 2026-11-24：增强失败、写回失败与请求超时记录到当前页面内存，设置页可以查看和清空。
+
+### 修复
+
+- 2026-11-24：整段草稿替换保护现有附件；模型判定无需改动时保留原稿；如实统计关闭图片参考时跳过的图片。
+- 2026-11-24：调整失败提示、悬停提示与溢出裁剪，避免按钮位置漂移和提示内容被裁掉。
+
+### 变更
+
+- 2026-11-25：移除设置页指向上游的 Star、issue、版本链接与更新日志入口；版本号仍以纯文本显示。宿主同步删除只服务于旧面板的 `readChangelog`、`plainTextItem`，设置接口不再返回 `changelog` 和 `about.url`；23:45 的后续提交同步说明与残留测试。
+- 2026-11-26：将完整定制线归入默认 `main`，区分上游版本、定制分支与安装记录；修正文档的安装来源和已经过时的界面说明，并提供可重跑的时间线生成器。本段尚未对应新的发布标签。
+
+**English**
+
+### Added
+
+- 2026-11-24: an orange Claude starburst for the idle composer button, a 120-second client watchdog, and in-memory error records viewable and clearable in settings.
+
+### Fixed
+
+- 2026-11-24: preserve attachments during whole-draft replacement, keep unchanged drafts untouched, report skipped images, and correct tooltip layout and clipping.
+
+### Changed
+
+- 2026-11-25: remove upstream Star, issue, version and changelog links from settings while keeping the plain-text version.
+- 2026-11-26: consolidate the custom line into default `main`, distinguish upstream releases from fork commits, correct installation and UI documentation, and add a reproducible timeline generator. These fork changes have no new release tag yet.
 
 ## [1.9.0] - 2026-11-22
 
@@ -281,7 +312,7 @@ English
 
 ## 链接
 
-[Unreleased]: https://github.com/huaguoxingkong/dsh-prompt-rewriter/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/langkeshuo-ai/dsh-prompt-rewriter/compare/v1.9.0...remove-upstream-links
 [1.9.0]: https://github.com/huaguoxingkong/dsh-prompt-rewriter/compare/v1.8.4...v1.9.0
 [1.8.4]: https://github.com/huaguoxingkong/dsh-prompt-rewriter/compare/v1.8.3...v1.8.4
 [1.8.3]: https://github.com/huaguoxingkong/dsh-prompt-rewriter/compare/v1.7.1...v1.8.3

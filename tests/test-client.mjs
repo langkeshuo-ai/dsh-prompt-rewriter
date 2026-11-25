@@ -304,6 +304,15 @@ function textOf(node) {
 		.join(' ');
 }
 
+/**
+ * The hover bubble text. The seat draws its own tooltip (a `.dsh-pe_tip` node) instead
+ * of setting `title`, so hover copy is asserted through that node.
+ */
+function tipOf(tree) {
+	const tip = flatten(tree).find((node) => node.props?.className === 'dsh-pe_tip');
+	return tip ? textOf(tip) : null;
+}
+
 // ---------------------------------------------------------------- fake fetch
 let nextResponse = null;
 const requests = [];
@@ -569,15 +578,20 @@ await test('shows an icon-only button once the draft has content', async () => {
 	// Icon-only: no visible text, the label lives in the accessible name and tooltip.
 	assert.equal(textOf(button), '');
 	assert.equal(button.props['aria-label'], 'label.idle');
-	assert.equal(button.props.title, 'label.idle');
+	assert.equal(button.props.title, undefined, 'the OS bubble is gone: hover copy is our own node');
+	assert.equal(tipOf(tree), 'label.idle');
 	const icon = flatten(button).find((node) => node.type === 'svg');
 	assert.ok(icon, 'expected an svg icon');
-	// The idle mark is the OFFICIAL fish logo (23.16:17.04 viewBox), sized by height.
-	assert.match(icon.props.viewBox, /^0 0 23\.16 17\.04$/u);
+	// The idle mark is the Claude starburst (local customization): a square
+	// 24-unit box drawn as four strokes, not the upstream fish path.
+	assert.match(icon.props.viewBox, /^0 0 24 24$/u);
 	assert.equal(icon.props.height, 14);
-	assert.ok(icon.props.width > icon.props.height, 'the fish is wider than tall');
-	const path = flatten(icon).find((node) => node.type === 'path');
-	assert.ok(path && path.props.d.length > 3000, 'official fish path must be reused verbatim');
+	assert.equal(icon.props.width, icon.props.height, 'the starburst is square');
+	assert.equal(icon.props.stroke, 'currentColor');
+	assert.equal(icon.props.strokeWidth, 3);
+	const paths = flatten(icon).filter((node) => node.type === 'path');
+	assert.equal(paths.length, 4, 'the starburst is four rays');
+	assert.ok(!paths.some((node) => node.props.d.length > 3000), 'the fish path must no longer be drawn');
 });
 
 await test('posts the draft and replaces it in place without sending', async () => {
@@ -605,7 +619,11 @@ await test('a clarification response leaves the original draft untouched', async
 	await sleep(20);
 	assert.equal(helper.writes.length, 0);
 	assert.equal(helper.state.draft, '诺奖终稿.docx');
-	assert.ok(flatten(mounted.rerender().tree).find((node) => node.props?.['data-tone'] === 'info'), 'clarification must be visible');
+	assert.ok(mounted.rerender().tree);
+	// 澄清说明不再占位渲染：它由按钮自身的悬停提示承担，座位宽度恒定。
+	const button = findButton(mounted.rerender().tree);
+	assert.match(String(tipOf(mounted.rerender().tree)), /state\.noRewrite/u, 'clarification is surfaced through the hover bubble');
+	assert.equal(flatten(mounted.rerender().tree).some((node) => node.props?.['data-tone'] === 'info'), false, 'no inline text may be rendered');
 });
 
 
@@ -712,7 +730,7 @@ await test('a failed request keeps the draft and switches to the retry mark', as
 	const button = findButton(tree);
 	assert.equal(textOf(button), '');
 	assert.equal(button.props['data-state'], 'error');
-	assert.match(button.props.title, /凭据缺失/u);
+	assert.match(String(tipOf(tree)), /凭据缺失/u, '悬停气泡给出失败原因');
 	assert.equal(helper.writes.length, 0, 'draft must be untouched on failure');
 	assert.match(textOf(tree), /凭据缺失/u);
 });
@@ -823,7 +841,7 @@ await test('a chip-free draft still lands when the span write is refused', async
 	assert.equal(findButton(mounted.rerender().tree).props['data-state'], 'undo');
 });
 
-await test('a user pause restores the fish mark instead of showing retry', async () => {
+await test('a user pause restores the resting mark instead of showing retry', async () => {
 	requests.length = 0;
 	nextResponse = (url, init) => new Promise((resolve, reject) => {
 		init.signal.addEventListener('abort', () => reject(Object.assign(new Error('aborted'), { name: 'AbortError' })));
@@ -840,14 +858,14 @@ await test('a user pause restores the fish mark instead of showing retry', async
 	await sleep(0);
 	const after = findButton(mounted.rerender().tree);
 
-	// Icon: back to the resting fish, NOT the retry/error mark.
+	// Icon: back to the resting starburst, NOT the retry/error mark.
 	assert.equal(after.props['data-state'], 'idle', 'a pause must not enter the error state');
 	assert.equal(after.props['data-busy'], false);
 	assert.notEqual(after.props['data-state'], 'error');
-	// The rendered mark is the fish svg (official viewBox), not the retry arrow.
+	// The rendered mark is the idle starburst (square viewBox), not the retry arrow.
 	const mark = flatten(after).find((node) => node.type === 'svg');
 	assert.ok(mark, 'expected an svg mark');
-	assert.equal(mark.props.viewBox, '0 0 23.16 17.04', 'pause must fall back to the official fish');
+	assert.equal(mark.props.viewBox, '0 0 24 24', 'pause must fall back to the resting mark');
 	// Draft untouched, no undo offered.
 	assert.equal(helper.writes.length, 0, 'a pause must leave the draft unchanged');
 	assert.notEqual(after.props['data-state'], 'undo');
@@ -933,14 +951,14 @@ await test('a failure shows its reason on screen, not only in title', async () =
 	await sleep(0);
 	const tree = mounted.rerender().tree;
 
-	// A visible notice element must exist, outside the visually hidden live region.
-	const notice = flatten(tree).find((node) => node.props?.className === 'dsh-pe_notice');
-	assert.ok(notice, 'a failed run must render a visible notice');
-	assert.equal(notice.props.role, 'alert');
-	assert.match(textOf(notice), /凭据缺失/u);
-	// It must not be the screen-reader-only span.
+	// 失败原因改由悬停气泡与无障碍名称承担，行内不渲染任何文字，
+	// 这样座位宽度恒定，图标不会因失败提示而相对麦克风漂移。
+	const button = findButton(tree);
+	assert.match(String(tipOf(tree)), /凭据缺失/u, '失败原因出现在悬停气泡里');
+	assert.match(String(button.props['aria-label']), /凭据缺失/u, '无障碍名称同步带原因');
+	assert.equal(flatten(tree).some((node) => node.props?.className === 'dsh-pe_notice'), false, '行内不再渲染提示文字');
 	const hidden = flatten(tree).find((node) => node.props?.className === 'dsh-pe_sr');
-	assert.notEqual(notice, hidden, 'the reason must live in a visible element');
+	assert.ok(hidden !== undefined, '读屏播报仍然保留');
 });
 
 await test('a successful run in context mode is reported in the accessible name', async () => {
@@ -957,8 +975,8 @@ await test('a successful run in context mode is reported in the accessible name'
 	const button = findButton(tree);
 	// The test stub's `t` echoes the key and its params, so assert the call shape:
 	// the context-aware key wraps the base label with the inner text as {base}.
-	assert.match(button.props.title, /label\.contextAware/u);
-	assert.match(button.props.title, /label\.undo/u, 'the inner label must be preserved as {base}');
+	assert.match(tipOf(tree), /label\.contextAware/u);
+	assert.match(tipOf(tree), /label\.undo/u, 'the inner label must be preserved as {base}');
 });
 
 await test('a plain-mode run is not described as context-aware', async () => {
@@ -972,7 +990,7 @@ await test('a plain-mode run is not described as context-aware', async () => {
 	helper.state.draft = '增强结果';
 	helper.state.draftRev = 7;
 	const tree = mounted.rerender().tree;
-	assert.equal(findButton(tree).props.title.includes('已参考本会话上下文'), false);
+	assert.equal(tipOf(tree).includes('已参考本会话上下文'), false);
 });
 
 await test('registers a settings page in the Settings sidebar', async () => {
@@ -1409,7 +1427,7 @@ await test('the context dot uses the host accent token with a blue fallback', as
 // ---------------------------------------------------------------------------
 // Keyboard parity
 // ---------------------------------------------------------------------------
-// The shortcut must do exactly what clicking the fish does, so it publishes the
+// The shortcut must do exactly what clicking the resting mark does, so it publishes the
 // seat's own `onClick` rather than a private copy of the work.
 
 await test('the shortcut runs the same handler the button click runs', async () => {
@@ -2138,6 +2156,10 @@ await test('composer seat stays decoupled from host geometry', () => {
 	const cssText = /const CSS = \[([\s\S]*?)\]\n\t\t\t\.join/u.exec(src)?.[1] ?? '';
 	const joined = cssText.split('\n').filter((l) => l.trim().startsWith("'")).map((l) => l.trim().replace(/^'|',?$/gu, '')).join('');
 	const rule = /\.dsh-pe_root\{([^}]*)\}/u.exec(joined)?.[1] ?? '';
+	// The host renders conversation.input.right before its model control, so the seat
+	// must keep the default flex order: any `order` override would move the icon away
+	// from "immediately before the model selector".
+	assert.equal(/order:/u.test(rule), false, 'no flex order override: the seat stays before the host model control');
 	assert.ok(/flex:0 0 auto/u.test(rule), 'seat must not shrink into neighbours');
 	assert.ok(/max-width:100%/u.test(rule), 'seat must bound its own width');
 	assert.equal(/margin-[a-z]+:-\d/u.test(rule), false, 'no negative margin');
@@ -2153,6 +2175,94 @@ await test('composer seat stays decoupled from host geometry', () => {
 	// Only CSS selector text matters; comments may mention host class names.
 	const cssRules = cssText.split('\n').filter((l) => !l.trim().startsWith('//')).join('\n');
 	assert.equal(/standardControls|InputBar_module/u.test(cssRules), false, 'no host-internal selectors in CSS rules');
+});
+
+
+// 追加用例：失败时写入客户端错误日志（拦 console.error 作为可回读证据）。
+await test('a failed run writes a client-side error log', async () => {
+	requests.length = 0;
+	nextResponse = { status: 500, body: { ok: false, message: '模型网关超时' } };
+	const captured = [];
+	const original = console.error;
+	console.error = (...args) => { captured.push(args); };
+	try {
+		const helper = makeHelpers({ draft: '写个脚本' });
+		const mounted = mountComponent(composerRegistration(installPlugin()).component, helper.props);
+		findButton(mounted.tree).props.onClick();
+		await sleep(0);
+		findButton(mounted.rerender().tree);
+	} finally {
+		console.error = original;
+	}
+	assert.equal(captured.length, 1, '一次失败只写一条日志，不能重复');
+	const flat = captured.map((args) => args.map((value) => typeof value === 'string' ? value : JSON.stringify(value)).join(' ')).join(' | ');
+	assert.match(flat, /\[dsh-prompt-rewriter\]/u, '日志带插件标识');
+	assert.match(flat, /enhance/u, '日志带操作类型');
+	assert.match(flat, /500|模型网关超时/u, '日志带错误信息');
+	assert.match(flat, /draftChars/u, '日志带必要上下文');
+});
+
+await test('a refused write is logged once and keeps the retry affordance', async () => {
+	requests.length = 0;
+	nextResponse = { body: { ok: true, text: '增强结果' } };
+	const captured = [];
+	const original = console.error;
+	console.error = (...args) => { captured.push(args); };
+	let tree;
+	try {
+		const helper = makeHelpers({ draft: '写个脚本' });
+		helper.props.inputActions = {
+			insertText: () => false,
+			captureInsertion: () => ({ start: 0, end: 0, draftRev: helper.state.draftRev }),
+		};
+		const mounted = mountComponent(composerRegistration(installPlugin()).component, helper.props);
+		findButton(mounted.tree).props.onClick();
+		await sleep(0);
+		tree = mounted.rerender().tree;
+	} finally {
+		console.error = original;
+	}
+	assert.equal(captured.length, 1, '写回被拒只记一条日志');
+	const flat = captured[0].map((value) => (typeof value === 'string' ? value : JSON.stringify(value))).join(' ');
+	assert.match(flat, /write/u, '操作类型是写回');
+	const button = findButton(tree);
+	assert.equal(button.props['data-state'], 'error', '仍显示重试图标');
+	assert.match(String(tipOf(tree)), /state\.failedWith/u, '悬停气泡走失败文案');
+	assert.match(String(button.props['aria-label']), /state\.failedWith/u, '无障碍名称同步');
+});
+
+await test('the retry hover copy names the action and the reason in both languages', async () => {
+	const matches = [...source.matchAll(/'state\.failedWith':\s*'([^']+)'/gu)].map((match) => match[1]);
+	assert.equal(matches.length, 2, '中英文各一条');
+	for (const text of matches) {
+		assert.match(text, /\{reason\}/u, '必须带失败原因占位符');
+	}
+	assert.ok(matches.some((text) => /重新增强/u.test(text)), '中文说明点击会重新增强');
+	assert.ok(matches.some((text) => /enhance again/iu.test(text)), '英文说明点击会重新增强');
+});
+
+await test('the seat draws its own hover bubble instead of the OS tooltip', async () => {
+	nextResponse = { body: { ok: false, code: 'AUTH', message: '凭据缺失' } };
+	const helper = makeHelpers({ draft: '写个脚本' });
+	const mounted = mountComponent(composerRegistration(installPlugin()).component, helper.props);
+	findButton(mounted.tree).props.onClick();
+	await sleep(0);
+	const tree = mounted.rerender().tree;
+	const button = findButton(tree);
+	// 1. 不再设置 title：否则浏览器会在约 1 秒后叠加一个系统气泡。
+	assert.equal(button.props.title, undefined, 'no native title bubble');
+	// 2. 悬停气泡是座位里的真实节点，且带 role=tooltip。
+	const tip = flatten(tree).find((node) => node.props?.className === 'dsh-pe_tip');
+	assert.ok(tip !== undefined, 'expected a .dsh-pe_tip node');
+	assert.equal(tip.props.role, 'tooltip');
+	assert.match(textOf(tip), /凭据缺失/u, '气泡里就是失败原因');
+	assert.match(String(button.props['aria-label']), /凭据缺失/u, '读屏名称与气泡一致');
+	// 3. 气泡绝对定位且默认隐藏：它不可能撑宽座位，也就不可能推动图标。
+	const css = /const CSS = \[([\s\S]*?)\]\n\t\t\t\.join/u.exec(source)?.[1] ?? '';
+	assert.match(css, /\.dsh-pe_tip\{position:absolute/u, 'the bubble is out of flow');
+	assert.match(css, /opacity:0;visibility:hidden/u, 'hidden until hover');
+	assert.match(css, /\.dsh-pe_root:hover \.dsh-pe_tip/u, 'shows on hover');
+	assert.match(css, /\.dsh-pe_root:focus-within \.dsh-pe_tip/u, 'shows on keyboard focus too');
 });
 
 console.log(failures === 0 ? '\nALL CLIENT TESTS PASSED' : `\n${failures} CLIENT TEST(S) FAILED`);
