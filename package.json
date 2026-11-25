@@ -1,6 +1,6 @@
 {
 	"name": "dsh-prompt-rewriter",
-	"version": "1.9.0",
+	"version": "1.9.1-dev.1",
 	"description": "One-click prompt enhancement beside the DeepSeek Harness composer: rewrites a draft in place without sending it.",
 	"type": "module",
 	"icon": "icon.svg",
@@ -25,6 +25,9 @@
 		"README.md",
 		"README.en.md",
 		"CHANGELOG.md",
+		"TIMELINE.md",
+		"VERSIONING.md",
+		"scripts/update-fork-timeline.mjs",
 		"LICENSE",
 		"NOTICE.md"
 	],
@@ -52,12 +55,12 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/huaguoxingkong/dsh-prompt-rewriter.git"
+		"url": "git+https://github.com/langkeshuo-ai/dsh-prompt-rewriter.git"
 	},
 	"bugs": {
-		"url": "https://github.com/huaguoxingkong/dsh-prompt-rewriter/issues"
+		"url": "https://github.com/langkeshuo-ai/dsh-prompt-rewriter/issues"
 	},
-	"homepage": "https://github.com/huaguoxingkong/dsh-prompt-rewriter#readme",
+	"homepage": "https://github.com/langkeshuo-ai/dsh-prompt-rewriter#readme",
 	"peerDependencies": {
 		"@deepseek-ai/schemastery": "^3.18.1",
 		"@deepseek-ai/dsh-client-ui-conversation": "*",

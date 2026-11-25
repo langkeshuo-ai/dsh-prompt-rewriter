@@ -2,13 +2,14 @@
 
 English | [中文](README.md)
 
-[![npm](https://img.shields.io/npm/v/dsh-prompt-rewriter.svg)](https://www.npmjs.com/package/dsh-prompt-rewriter)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/huaguoxingkong/dsh-prompt-rewriter)
-[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
-[![DSH Plugin Hub](https://dshpluginhub.ai/badges/plugins/dsh-prompt-rewriter.svg)](https://dshpluginhub.ai/plugins/dsh-prompt-rewriter)
-[![DeepSeek Harness plugins](https://deepseekharnessplugins.com/api/badge/huaguoxingkong/dsh-prompt-rewriter)](https://deepseekharnessplugins.com/plugins/huaguoxingkong/dsh-prompt-rewriter)
-[![dsh.so risk: low](https://cdn.dsh.so/badge/dsh-prompt-rewriter.svg)](https://www.dsh.so/artifact/dsh-prompt-rewriter/?ref=badge)
+
+This is **langkeshuo-ai's customized fork**, based on upstream v1.9.0. It keeps the orange Claude starburst and adds fixes for attachment writes, stuck requests, error records and settings links.
+
+- **Current mainline**: [main](https://github.com/langkeshuo-ai/dsh-prompt-rewriter/tree/main), containing the complete customization and repository documentation.
+- **Repository chronology**: [TIMELINE.md](TIMELINE.md), separating inherited upstream history from the custom commits and GitHub repository creation.
+- **Version and installation notes**: [VERSIONING.md](VERSIONING.md). The mainline retains upstream version `1.9.1-dev.1`; older custom branches report `1.9.0`. Use the source and full commit hash to identify a build.
+- The npm package and inherited marketplace badges refer to upstream. Install this fork from the repository and branch shown below.
 
 Turns the half-formed draft in your composer into a task instruction you can actually run.
 **It rewrites the box, it never sends.** Don't like it? `Ctrl+Z` and you're back.
@@ -17,7 +18,9 @@ Turns the half-formed draft in your composer into a task instruction you can act
 
 ---
 
-![Click the whale-tail icon on the right of the composer and the draft becomes a complete prompt in place](https://cdn.jsdelivr.net/npm/dsh-prompt-rewriter/docs/images/01-hero-en.gif)
+> The figures below are inherited upstream demonstrations, not new screenshots of this fork. The customized icon and settings differ as described here.
+
+![Upstream demonstration: click the whale-tail icon on the right of the composer and the draft becomes a complete prompt in place](https://cdn.jsdelivr.net/npm/dsh-prompt-rewriter/docs/images/01-hero-en.gif)
 
 ## What it fills in for you
 
@@ -37,7 +40,7 @@ Two more points worth stating: **the rewrite never contains a question back** (i
 ## How to use it
 
 1. Type any draft in the composer — shorter is fine.
-2. Click the **whale-tail icon** in the right-hand control group of the composer (a small blue dot means it will use conversation context). It shares that group with the model picker and send button, and other plugins may add controls between them. It isn't there when the box is empty.
+2. Click the **orange Claude starburst** in the right-hand control group of the composer (a small blue dot means it will use conversation context). It shares that group with the model picker and send button, and other plugins may add controls between them. It isn't there when the box is empty.
 3. A moment later — how long depends on the chosen model — the draft is replaced with the rewritten prompt.
 4. Not what you wanted? `Ctrl+Z`, or click the undo arrow the button turned into.
 
@@ -84,10 +87,10 @@ Turn it on at **Settings → Prompt Enhance → Shortcut**. Desktop uses `Ctrl+E
 
 | State | What you see | What it means |
 |---|---|---|
-| Idle | static whale tail | ready to click |
-| Rewriting | the tail spins fast | running; click again to cancel |
+| Idle | orange Claude starburst | ready to click |
+| Rewriting | animation in the same button | running; click again to cancel |
 | Done | turns into an undo arrow | one click back, or `Ctrl+Z` |
-| Failed | red retry icon + reason | the reason sits right next to it — no log hunting |
+| Failed | red retry icon | hover for the reason; settings shows errors kept in page memory |
 
 ## Three things worth not confusing
 
@@ -131,34 +134,45 @@ Only **non-image attachments currently in the composer** — attachments from ea
 - Turning the model switch off does not clear your selection; flipping it back on shows the same choice.
 - Images still uploading or over the Host attachment service's per-image or per-message limit are skipped; the status area reports how many were missed. A rewrite never fails because of an image.
 - Files over the count or size limit are skipped and reported in the result status.
-- The **current version** sits in the top-right of the settings page as plain text (it is no longer a link). Check it before reporting a problem — it makes the issue much easier to pin down.
+- The **current version** appears as plain text in the top-right. Record the branch and commit hash as well to identify a customized build.
 - **Custom rules**: pick "Custom: <name>" in the rule-set dropdown to use one. "＋ Add rule" opens two fields — a **meta prompt** on top (one click to copy; when the clipboard is unavailable the field is selected for you and the hint says to press Ctrl+C) and a paste box below. Send the meta prompt to your own AI; it returns a rule set built from your habits, preferences and memory. Paste the body back, give it a name and save. Up to 10 rules, 4000 characters each. Every entry can be **disabled or enabled**; disabling or deleting the rule in use switches the selection back to **Legacy** in the same save, so a dead selection is never left behind (a hand-edited config that disables the rule in use is refused, and the run time falls back to Legacy as well).
-- This build is a fork of the project, so the settings page carries no entry points back to the upstream repository: no Star link, no issue link, and no changelog panel.
+- This fork removes the upstream Star, issue, version links and changelog panel.
+- **Error log** shows recent enhancement, write and timeout errors kept only in page memory; clearing the log or reloading the page removes them.
 
 ## Install
 
-DeepSeek Harness, `node >= 22`. **Restart Harness after installing** — this plugin has no HMR.
+DeepSeek Harness, `node >= 22`. **Fully quit and reopen Harness after installation**: the host imports the enhancement routes and rules at startup. Client-only hot reloading depends on the actual host version and configuration.
 
-### From npm (recommended)
-
-```sh
-dsh plugin --profile web add dsh-prompt-rewriter      # web build
-dsh plugin --profile desktop add dsh-prompt-rewriter  # desktop app
-```
-
-Use the profile you actually run. The plugin is a web-platform client plugin, so it works in either.
-
-### From GitHub source
+### Get the customized source
 
 ```sh
-dsh plugin --profile web add github:huaguoxingkong/dsh-prompt-rewriter
+git clone --branch main https://github.com/langkeshuo-ai/dsh-prompt-rewriter.git
+cd dsh-prompt-rewriter
+npm install --ignore-scripts --omit=dev --legacy-peer-deps --package-lock=false
+git log -1 --format='%H %cI %s'
 ```
 
-Installing from source runs a build step and may ask you to approve it. Grant that only to packages you trust.
+The customized line is consolidated into the default `main`. Historical branches remain as references; new installations use this repository's `main`, not the upstream npm package. The source already contains host and client entry points.
 
-### From a release zip
+### Add it to the profile you actually run
 
-Download the zip from [Releases](https://github.com/huaguoxingkong/dsh-prompt-rewriter/releases), unzip, then `npm install && dsh plugin --profile web add .`.
+For a CLI-managed web profile:
+
+```sh
+dsh plugin --profile web add /absolute/path/to/dsh-prompt-rewriter
+```
+
+If the desktop CLI reports `profile "desktop" is managed exclusively by the Electron application`, use the application's plugin management path. An existing source-linked installation follows its linked checkout; see [VERSIONING.md](VERSIONING.md) for verification.
+
+To update the existing custom branch:
+
+```sh
+git switch main
+git pull --ff-only origin main
+npm test
+```
+
+Fully quit and reopen DSH after host or rule changes. The npm package and upstream Releases are not installation sources for this fork.
 
 ## FAQ
 
@@ -233,12 +247,12 @@ The plugin has a Host half and a Client half. The Host depends only on host serv
 
 | What changed | How it takes effect | Host restart |
 | --- | --- | --- |
-| `client.js` (button, interaction, wording, styles) | Client HMR polls each front-end bundle every 500 ms and pushes the change over `/plugins/events`; the open window swaps that plugin entry in place | Not needed; refreshing the window is only a fallback |
+| `client.js` (button, interaction, wording, styles) | A host with client HMR enabled can replace the front-end resources | Depends on the host; refresh or restart when needed |
 | `index.js`, `*-rules.mjs` (enhancement route, prompt rules, settings storage) | Imported once when the Host starts | Required |
 
-Client HMR comes from `@deepseek-ai/dsh-client-hmr`, which the Web composition always mounts. It is not the Host's `hmr`: this machine's profile sets the Host `hmr` to `disabled: true` (see the note in `cordis.patch.yml`), so Host **code** is not hot-reloaded. Settings changed in the UI still take effect immediately (they go through the settings service, not file watching); editing `cordis.patch.yml` by hand is what needs a restart.
+Client resource replacement and host code loading are separate checks. Machine-specific profile configuration is not shipped by this repository. Options saved in settings use the host settings service; host or rule file changes require a restart.
 
-**Unit tests are not published in the npm package.** The repo carries the full `tests/` tree and `scripts/gate.mjs`, but they depend on the host's private `@deepseek-ai/schemastery`, a copy of the host's React, and this machine's profile layout, so a fresh clone cannot run them as-is — they stay in the repo and out of the tarball. Every release runs them locally first.
+**Unit tests are not published in the npm package.** After installing runtime dependencies, `npm test` runs the Host, Client, Units and Settings suites using substitute host and React implementations, without calling a live model. See [VERSIONING.md](VERSIONING.md) for maintenance and release notes; this documentation cleanup does not publish a build.
 
 ```sh
 node --check index.js            # syntax
