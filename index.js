@@ -1500,101 +1500,29 @@ function settingsNamespace(ctx) {
 }
 
 /**
- * Package facts the settings page shows: version and project URL.
+ * Package facts the settings page shows: the package version.
  *
  * Read from this package's own `package.json` at runtime rather than hard-coded,
  * so bumping the manifest is the only step a release needs. Cached after the first
  * read: the file cannot change while the plugin is loaded.
  *
- * @returns `{ version, url }`; fields are undefined when the manifest is absent.
+ * There is deliberately no project URL here. This build is a fork, so the
+ * upstream repository it was published from is not a page a user should be
+ * sent to from the settings screen.
+ *
+ * @returns `{ version }`; the field is undefined when the manifest is absent.
  */
 function readAbout() {
 	if (aboutCache !== undefined) return aboutCache;
 	let version;
-	let url;
 	try {
 		const manifest = JSON.parse(fs.readFileSync(path.join(packageRoot(), 'package.json'), 'utf8'));
 		version = typeof manifest.version === 'string' ? manifest.version : undefined;
-		// `repository` may be a string or `{ url }`; strip the git+ prefix and .git
-		// suffix so it is directly openable in a browser.
-		const raw = typeof manifest.repository === 'string' ? manifest.repository : manifest.repository?.url;
-		if (typeof raw === 'string') {
-			url = raw
-				.replace(/^git\+/u, '')
-				.replace(/\.git$/u, '')
-				.replace(/^git:\/\//u, 'https://');
-		}
 	} catch {
 		// A missing manifest simply hides the version line; it must not break the page.
 	}
-	aboutCache = { version, url };
+	aboutCache = { version };
 	return aboutCache;
-}
-
-/** Memoized release notes. The file cannot change while the plugin is loaded. */
-let changelogCache;
-
-/**
- * Strip inline Markdown emphasis from one changelog bullet.
- *
- * The settings panel has no Markdown renderer, so `**bold**` and `` `code` ``
- * used to reach the screen with their markers intact. Unwrapping happens here,
- * at read time, because the shipped file must stay byte-identical: the release
- * body and the A3/B7 checks compare it verbatim.
- * @param {string} text Bullet text exactly as written in CHANGELOG.md.
- * @returns {string} The same text without the emphasis markers.
- */
-export function plainTextItem(text) {
-	return text.replace(/\*\*(.+?)\*\*/gu, '$1').replace(/`([^`]+)`/gu, '$1');
-}
-
-/**
- * Parse the shipped CHANGELOG.md into versioned Chinese entries.
- *
- * The file follows Keep a Changelog 1.1.0: a RELEASED section is
- * `## [X.Y.Z] - YYYY-MM-DD`, and `## [Unreleased]` holds work that has no date yet.
- * Only the dated sections are shown, so an unreleased line can never read as a
- * published version. Every `## ` heading ends the previous section, so the bullets
- * of `[Unreleased]` can never leak into the release above it either. `### Added` /
- * `### Changed` / `### Fixed` are sub-headings inside a section and do not close it.
- * The English blocks are skipped on purpose: this panel displays Chinese only. A
- * missing or unreadable file leaves the panel empty rather than breaking the page.
- * @returns Array of { version, date, items } objects, newest first.
- */
-function readChangelog() {
-	if (changelogCache !== undefined) return changelogCache;
-	const entries = [];
-	try {
-		const text = fs.readFileSync(path.join(packageRoot(), 'CHANGELOG.md'), 'utf8');
-		let current = null;
-		let chinese = false;
-		for (const rawLine of text.split('\n')) {
-			const line = rawLine.trim();
-			const heading = /^## \[(\d+\.\d+\.\d+)\] - (\d{4}-\d{2}-\d{2})$/u.exec(line);
-			if (heading !== null) {
-				current = { version: heading[1], date: heading[2], items: [] };
-				entries.push(current);
-				chinese = false;
-				continue;
-			}
-			// Any other level-2 heading (notably `## [Unreleased]`) closes the section.
-			if (/^## /u.test(line)) {
-				current = null;
-				chinese = false;
-				continue;
-			}
-			if (current === null) continue;
-			// Language markers appear as `**中文**` in older files and as plain `中文`
-			// (or `## 中文`) after the changelog was synchronised with the release body.
-			if (line === '**中文**' || line === '中文' || line === '## 中文') { chinese = true; continue; }
-			if (line === '**English**' || line === 'English' || line === '## English') { chinese = false; continue; }
-			if (chinese && /^-\s+/u.test(line)) current.items.push(plainTextItem(line.replace(/^-\s+/u, '')));
-		}
-	} catch {
-		// A missing changelog must not take the settings page down.
-	}
-	changelogCache = entries.filter((entry) => entry.items.length > 0);
-	return changelogCache;
 }
 
 /**
@@ -1706,10 +1634,10 @@ async function handleSettings(ctx, config, request) {
 		const imageLimits = readAttachmentImageLimits(ctx);
 		const fileLimits = readAttachmentFilePolicy();
 		// The composer reads this route on every mount and before opening files, and it
-		// only needs the switches and the size limits. The about text and the changelog
-		// are for the settings page, so a composer-scoped read skips them.
+		// only needs the switches and the size limits. The package version is for the
+		// settings page, so a composer-scoped read skips it.
 		if (readScope(request) === 'composer') return Response.json({ ok: true, values, imageLimits, fileLimits });
-		return Response.json({ ok: true, values, imageLimits, fileLimits, about: readAbout(), changelog: readChangelog() });
+		return Response.json({ ok: true, values, imageLimits, fileLimits, about: readAbout() });
 	}
 
 	let payload;

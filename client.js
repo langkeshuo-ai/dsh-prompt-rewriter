@@ -197,73 +197,6 @@ window.__ModuleLoader__.load({
 			'.dsh-pe_sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;',
 			'clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}',
 
-			// ---- Release notes (settings page) -------------------------------------
-			// Card + timeline. Every token below is one the host actually defines, so
-			// both light and dark themes follow the shell instead of a hard-coded colour.
-			'.dsh-pe-changelog{box-sizing:border-box;display:flex;flex-direction:column;',
-			'margin-top:4px;padding:16px 18px 14px;max-width:760px;border-radius:12px;',
-			'border:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1)}',
-			'.dsh-pe-changelogHead{display:flex;align-items:baseline;justify-content:space-between;',
-			'gap:12px}',
-			'.dsh-pe-changelogTitle{font-size:14px;font-weight:600;',
-			'color:var(--dsw-alias-label-primary,inherit)}',
-			'.dsh-pe-changelogCount{font-size:12px;flex:none;',
-			'color:var(--dsw-alias-label-secondary,inherit)}',
-			'.dsh-pe-changelogList{position:relative;display:flex;flex-direction:column;',
-			'margin-top:12px;padding-left:18px}',
-			'.dsh-pe-changelogList::before{content:"";position:absolute;left:4px;top:8px;',
-			'bottom:8px;width:1px;',
-			'background:var(--dsw-alias-border-l1)}',
-			'.dsh-pe-changelogEntry{position:relative;display:flex;flex-direction:column;',
-			'padding:1px 0}',
-			'.dsh-pe-changelogDot{position:absolute;left:-18px;top:11px;width:9px;height:9px;',
-			'box-sizing:border-box;border-radius:50%;border:2px solid ',
-			'var(--dsw-alias-label-secondary);',
-			'background:transparent}',
-			'.dsh-pe-changelogEntry[data-latest="true"] .dsh-pe-changelogDot{',
-			'border-color:var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6);',
-			'background:var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6)}',
-			'.dsh-pe-changelogRow{display:flex;align-items:center;gap:8px;width:100%;',
-			'padding:7px 8px;border:0;border-radius:6px;background:transparent;',
-			'cursor:pointer;font:inherit;text-align:left;',
-			'color:var(--dsw-alias-label-primary,inherit)}',
-			'.dsh-pe-changelogRow:hover{background:var(--dsw-alias-bg-layer-2)}',
-			'.dsh-pe-changelogRow:focus-visible{outline:2px solid ',
-			' var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6);outline-offset:1px}',
-			'.dsh-pe-changelogBadge{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;',
-			'font-size:12px;font-weight:600;letter-spacing:.02em;padding:2px 7px;border-radius:5px;',
-			'border:1px solid var(--dsw-alias-border-l1)}',
-			'.dsh-pe-changelogEntry[data-latest="true"] .dsh-pe-changelogBadge{',
-			'color:var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6);',
-			'border-color:var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6)}',
-			'.dsh-pe-changelogLatest{flex:none;font-size:11px;font-weight:700;padding:2px 7px;',
-			'border:1px solid var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6);border-radius:4px;',
-			'color:var(--dsw-alias-label-primary);background:var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6)}',
-			'body[data-ds-dark-theme] .dsh-pe-changelogLatest{color:var(--dsw-alias-bg-base)}',
-			'.dsh-pe-changelogMeta{font-size:12px;',
-			'color:var(--dsw-alias-label-secondary,inherit)}',
-			'.dsh-pe-changelogChevron{margin-left:auto;width:8px;height:8px;flex:none;',
-			'border-right:1.5px solid var(--dsw-alias-label-secondary,currentColor);',
-			'border-bottom:1.5px solid var(--dsw-alias-label-secondary,currentColor);',
-			'transform:rotate(45deg);transition:transform .18s ease}',
-			'.dsh-pe-changelogEntry[data-open="true"] .dsh-pe-changelogChevron{',
-			'transform:rotate(225deg)}',
-			'.dsh-pe-changelogItems{margin:4px 0 10px;padding:0 0 0 16px;list-style:none}',
-			'.dsh-pe-changelogItems li{position:relative;margin:6px 0;font-size:13px;',
-			'line-height:1.7;color:var(--dsw-alias-label-secondary,inherit)}',
-			'.dsh-pe-changelogItems li::before{content:"";position:absolute;left:-12px;top:9px;',
-			'width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.45}',
-			// The footer is one row that carries the hairline once; each link keeps the
-			// same 12px brand colour, so the Star ask adds no new visual layer.
-			'.dsh-pe-changelogFootRow{margin-top:10px;padding-top:10px;border-top:1px solid ',
-			'var(--dsw-alias-border-l1);display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}',
-			'.dsh-pe-changelogFoot{font-size:12px;',
-			'text-decoration:none;',
-			'color:var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6)}',
-
-			'.dsh-pe-changelogFoot:hover{text-decoration:underline}',
-			'.dsh-pe-changelogFoot:focus-visible{outline:2px solid currentColor;',
-			'outline-offset:2px;border-radius:2px}',
 			// ---- Settings page -------------------------------------------------
 			// Host theme tokens only, so the page follows light/dark automatically.
 			'.dsh-pe-logTitle{color:var(--dsw-alias-label-primary);font-size:13px;line-height:20px;font-weight:500}',
@@ -274,12 +207,11 @@ window.__ModuleLoader__.load({
 			'.dsh-pe-logStage{flex:0 0 auto;color:var(--dsw-alias-state-error-primary)}',
 			'.dsh-pe-logMsg{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-primary)}',
 			'.dsh-pe-settings{display:flex;flex-direction:column;gap:10px;max-width:760px}',
-			// Header line: intro on the left, version on the right, the way the plugin
-			// market pairs a description with its package version.
+			// Version line: one right-aligned row, the way the plugin market shows a
+			// package version. `flex-end` keeps it where it used to sit beside the
+			// description that used to share this row.
 			'.dsh-pe-settingsHead{display:flex;flex-wrap:wrap;align-items:baseline;',
-			'justify-content:space-between;gap:4px 12px;margin:0}',
-			'.dsh-pe-settingsIntro{margin:0;color:var(--dsw-alias-label-secondary);',
-			'font-size:13px;line-height:20px}',
+			'justify-content:flex-end;gap:4px 12px;margin:0}',
 			'.dsh-pe-settingsGroupHead{display:flex;align-items:center;margin-top:4px;padding:0 2px 5px;border-bottom:1px solid var(--dsw-alias-border-l1)}',
 			'.dsh-pe-settingsGroupTitle{margin:0;color:var(--dsw-alias-label-secondary);font-size:12px;line-height:18px;font-weight:600;letter-spacing:.02em}',
 			// Same weight and colour as the host's own package version labels: muted,
@@ -287,21 +219,6 @@ window.__ModuleLoader__.load({
 			'.dsh-pe-version{flex:none;font-size:12px;line-height:20px;color:var(--dsw-alias-label-secondary);',
 			'font-family:var(--dsw-font-mono,ui-monospace,SFMono-Regular,Menlo,monospace);',
 			'text-decoration:none;border-radius:var(--dsw-radius-sm)}',
-			'a.dsh-pe-version{cursor:pointer}',
-			// The line in the head doubles as the issue link; it inherits the intro's
-			// muted colour so it reads as one sentence, and underlines only on hover.
-			'.dsh-pe-feedbackLink{color:inherit;text-decoration:none;border-radius:var(--dsw-radius-sm)}',
-			'.dsh-pe-feedbackLink:hover{color:var(--dsw-alias-label-secondary);text-decoration:underline}',
-			'.dsh-pe-feedbackLink:focus-visible{outline:none;box-shadow:0 0 0 2px var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6)}',
-			// One muted line, the way the host's own settings rows read: the only colour comes
-			// from the star glyph itself, so nothing here out-shouts the settings below it.
-			'.dsh-pe-star{color:inherit;text-decoration:none}',
-			'.dsh-pe-star:hover{text-decoration:underline}',
-			'.dsh-pe-star:focus-visible{outline:none;box-shadow:0 0 0 2px var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6);border-radius:2px}',
-			'.dsh-pe-headSep{margin:0 6px;color:inherit;opacity:.6}',
-			'a.dsh-pe-version:hover{color:var(--dsw-alias-label-secondary);text-decoration:underline}',
-			'a.dsh-pe-version:focus-visible{outline:none;color:var(--dsw-alias-label-secondary);',
-			'box-shadow:0 0 0 2px var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6)}',
 			// Each row is a two-column flex that WRAPS. Wrapping is what makes the
 			// narrow case work: `@container` cannot be used here because the host
 			// settings panel owns the ancestor chain and declares no container-type,
@@ -406,23 +323,23 @@ window.__ModuleLoader__.load({
 			// Only colour, border and shadow move — never width/height/padding/margin — so
 			// hovering can never shift a row (the same rule that keeps issue #9 fixed).
 			'.dsh-pe-customAct,.dsh-pe-customCopy,.dsh-pe-customSave,.dsh-pe-customCancel,',
-			'.dsh-pe-modalClose,.dsh-pe-addRule,.dsh-pe-binding,.dsh-pe-switch,.dsh-pe-reset,.dsh-pe-changelogRow',
+			'.dsh-pe-modalClose,.dsh-pe-addRule,.dsh-pe-binding,.dsh-pe-switch,.dsh-pe-reset',
 			'{transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease,box-shadow 150ms ease}',
 			'.dsh-pe-customAct:hover,.dsh-pe-customCopy:hover,.dsh-pe-customSave:hover,',
 			'.dsh-pe-customCancel:hover,.dsh-pe-modalClose:hover,.dsh-pe-addRule:hover,',
-			'.dsh-pe-reset:hover,.dsh-pe-changelogRow:hover,.dsh-pe-binding:hover:not([data-recording="true"])',
+			'.dsh-pe-reset:hover,.dsh-pe-binding:hover:not([data-recording="true"])',
 			'{background:var(--dsw-alias-interactive-bg-hover,rgba(255,255,255,.08));',
 			'color:var(--dsw-alias-label-primary);border-color:var(--dsw-alias-border-selected,currentColor)}',
 			'.dsh-pe-customAct:active,.dsh-pe-customCopy:active,.dsh-pe-customSave:active,',
 			'.dsh-pe-customCancel:active,.dsh-pe-modalClose:active,.dsh-pe-addRule:active,',
-			'.dsh-pe-reset:active,.dsh-pe-changelogRow:active,.dsh-pe-binding:active:not(:disabled)',
+			'.dsh-pe-reset:active,.dsh-pe-binding:active:not(:disabled)',
 			'{background:var(--dsw-alias-interactive-bg-active,rgba(255,255,255,.14))}',
 			'.dsh-pe-customActDanger:hover{background:var(--dsw-alias-interactive-bg-hover-danger,rgba(217,83,79,.16));',
 			'color:var(--dsw-alias-label-danger,#d9534f);border-color:currentColor}',
 			'.dsh-pe-switch:hover{box-shadow:0 0 0 3px var(--dsw-alias-interactive-bg-hover,rgba(255,255,255,.08))}',
 			'.dsh-pe-customAct:focus-visible,.dsh-pe-customCopy:focus-visible,.dsh-pe-customSave:focus-visible,',
 			'.dsh-pe-customCancel:focus-visible,.dsh-pe-modalClose:focus-visible,.dsh-pe-addRule:focus-visible,',
-			'.dsh-pe-switch:focus-visible,.dsh-pe-reset:focus-visible,.dsh-pe-changelogRow:focus-visible',
+			'.dsh-pe-switch:focus-visible,.dsh-pe-reset:focus-visible',
 			'{outline:2px solid var(--dsw-alias-brand-primary-new-colorprimary-new-color,#4176e6);outline-offset:2px}',
 			'.dsh-pe-customAct:disabled,.dsh-pe-customCopy:disabled,.dsh-pe-customSave:disabled,',
 			'.dsh-pe-customCancel:disabled,.dsh-pe-reset:disabled,.dsh-pe-addRule:disabled,.dsh-pe-binding:disabled',
@@ -2263,8 +2180,6 @@ window.__ModuleLoader__.load({
 			// hard-coded here: a release only bumps package.json.
 			const [about, setAbout] = useState(null);
 			// Release notes shipped with the package; newest version is open by default.
-			const [changelog, setChangelog] = useState([]);
-			const [openVersion, setOpenVersion] = useState(null);
 			// Keyboard-recording state for the shortcut row.
 			const [recording, setRecording] = useState(false);
 			const [shortcutError, setShortcutError] = useState(null);
@@ -2358,10 +2273,6 @@ window.__ModuleLoader__.load({
 						if (body?.ok !== true) throw new Error(body?.message || t('settings.loadFailed', { status: response.status }));
 						setValues(body.values);
 						if (body.about !== undefined) setAbout(body.about);
-						if (Array.isArray(body.changelog)) {
-							setChangelog(body.changelog);
-							setOpenVersion(body.changelog.length > 0 ? body.changelog[0].version : null);
-						}
 					} catch (failure) {
 						if (alive.current && !controller.signal.aborted) setError(failure instanceof Error ? failure.message : String(failure));
 					}
@@ -2913,40 +2824,11 @@ window.__ModuleLoader__.load({
 			return h(
 				'div',
 				{ className: 'dsh-pe-settings' },
-				// Intro line with the version at the right, the way the plugin market shows a
-				// package version beside its description. The version links to the project
-				// page and opens in a new tab, so the current session is left untouched.
-				h('div', { className: 'dsh-pe-settingsHead' },
-					// The head row is the one place a first-time visitor always reads, so it carries
-				// the two project asks: the Star (brand colour, leftmost) and the issue tracker
-				// (muted, right after it). Both fall back to plain text with no project URL.
-				h('p', { className: 'dsh-pe-settingsIntro' },
-					about?.url !== undefined && h('a', {
-						className: 'dsh-pe-star',
-						href: about.url,
-						target: '_blank',
-						rel: 'noopener noreferrer',
-						title: about.url,
-					}, t('settings.star')),
-					about?.url !== undefined && h('span', { className: 'dsh-pe-headSep', 'aria-hidden': 'true' }, '·'),
-					about?.url === undefined
-						? t('settings.feedback')
-						: h('a', {
-							className: 'dsh-pe-feedbackLink',
-							href: about.url + '/issues',
-							target: '_blank',
-							rel: 'noopener noreferrer',
-							title: about.url + '/issues',
-						}, t('settings.feedback'))),
-					about?.version !== undefined && (about?.url === undefined
-						? h('span', { className: 'dsh-pe-version' }, `v${about.version}`)
-						: h('a', {
-							className: 'dsh-pe-version',
-							href: about.url,
-							target: '_blank',
-							rel: 'noopener noreferrer',
-							title: about.url,
-						}, `v${about.version}`)),
+				// Version line, right-aligned the way the plugin market shows a package
+				// version. Plain text rather than a link: this fork has no upstream project
+				// page to send a reader to.
+				about?.version !== undefined && h('div', { className: 'dsh-pe-settingsHead' },
+					h('span', { className: 'dsh-pe-version' }, `v${about.version}`),
 				),
 
 				sectionHeading('model', t('settings.group.model')),
@@ -3139,51 +3021,6 @@ window.__ModuleLoader__.load({
 							h('span', { className: 'dsh-pe-logMsg' }, entry.message),
 						))),
 
-				changelog.length > 0 && h('div', { className: 'dsh-pe-changelog' },
-					h('div', { className: 'dsh-pe-changelogHead' },
-						h('span', { className: 'dsh-pe-changelogTitle' }, t('settings.changelog.title')),
-						h('span', { className: 'dsh-pe-changelogCount' },
-							t('settings.changelog.count', { count: changelog.length })),
-					),
-					h('div', { className: 'dsh-pe-changelogList' },
-						...changelog.map((entry, index) => {
-							const open = openVersion === entry.version;
-							return h('div', {
-								key: entry.version,
-								className: 'dsh-pe-changelogEntry',
-								'data-open': open ? 'true' : 'false',
-								'data-latest': index === 0 ? 'true' : 'false',
-							},
-								h('span', { className: 'dsh-pe-changelogDot', 'aria-hidden': 'true' }),
-								h('button', {
-									type: 'button',
-									className: 'dsh-pe-changelogRow',
-									'aria-expanded': open,
-									onClick: () => setOpenVersion(open ? null : entry.version),
-								},
-									h('span', { className: 'dsh-pe-changelogBadge' }, 'v' + entry.version),
-									index === 0 && h('span', { className: 'dsh-pe-changelogLatest' },
-										t('settings.changelog.latest')),
-									h('span', { className: 'dsh-pe-changelogMeta' },
-										t('settings.changelog.items', { count: entry.items.length })),
-									h('span', { className: 'dsh-pe-changelogChevron', 'aria-hidden': 'true' }),
-								),
-								open && h('ul', { className: 'dsh-pe-changelogItems' },
-									...entry.items.map((item, itemIndex) => h('li', { key: itemIndex }, item)),
-								),
-							);
-						}),
-					),
-					about?.url !== undefined && h('div', { className: 'dsh-pe-changelogFootRow' },
-						h('a', {
-							className: 'dsh-pe-changelogFoot',
-							href: about.url + '/releases',
-							target: '_blank',
-							rel: 'noopener noreferrer',
-						}, t('settings.changelog.full')),
-					),
-				),
-
 				// The editor is mounted only while it is open: nothing of it exists on the
 				// page before "＋ 添加规则" is pressed.
 				customModal(),
@@ -3253,7 +3090,6 @@ window.__ModuleLoader__.load({
 								'state.status.legacy': '已用内置规则（旧版）',
 								// Settings page
 								'nav': '提示词增强',
-								'settings.feedback': '遇到问题？提 issue ↗',
 								'settings.group.model': '模型',
 								'settings.group.enhancement': '增强规则与参考内容',
 								'settings.group.keyboard': '快捷键',
@@ -3324,12 +3160,6 @@ window.__ModuleLoader__.load({
 								'settings.rules.workbuddy.strength': '照它的原始流程：先分析目标、歧义、清晰度与缺失上下文，再按七条提示词工程原则重写；草稿已清晰时只做轻度润色，不返回原文。',
 								'settings.rules.workbuddy.length': '原文上限约 800 字符（这套没有逐字保真条款，长草稿会被压缩）',
 								'settings.rules.workbuddy.bestFor': '要交给别的工具或同事照做的规格型需求。',
-								'settings.changelog.title': '更新日志',
-								'settings.changelog.count': '共 {count} 个版本',
-								'settings.changelog.latest': '最新',
-								'settings.changelog.items': '{count} 项更新',
-								'settings.changelog.full': '在 GitHub 查看完整日志 ↗',
-								'settings.star': '点个 Star ⭐',
 								'settings.loading': '正在读取设置…',
 								'settings.loadFailed': '读取设置失败（HTTP {status}）。',
 								'settings.saveFailed': '保存设置失败。',
@@ -3390,7 +3220,6 @@ window.__ModuleLoader__.load({
 								'state.status.legacy': 'Rewritten with the legacy built-in rule',
 								// Settings page
 								'nav': 'Prompt Enhance',
-								'settings.feedback': 'Hit a problem? File an issue ↗',
 								'settings.group.model': 'Model',
 								'settings.group.enhancement': 'Rules and references',
 								'settings.group.keyboard': 'Keyboard shortcut',
@@ -3461,12 +3290,6 @@ window.__ModuleLoader__.load({
 								'settings.rules.workbuddy.strength': 'The shipped WorkBuddy pass: analyse objective, ambiguity, clarity and missing context, then rewrite against its seven principles; a clear draft is lightly polished rather than returned unchanged.',
 								'settings.rules.workbuddy.length': 'the shipped cap of around 800 characters (no verbatim-fact clause, so long drafts get compressed)',
 								'settings.rules.workbuddy.bestFor': 'spec-like requests handed to another tool or a colleague.',
-								'settings.changelog.title': 'Changelog',
-								'settings.changelog.count': '{count} versions',
-								'settings.changelog.latest': 'Latest',
-								'settings.changelog.items': '{count} changes',
-								'settings.changelog.full': 'View full history on GitHub ↗',
-								'settings.star': 'Star the repo ⭐',
 								'settings.loading': 'Loading settings…',
 								'settings.loadFailed': 'Could not load settings (HTTP {status}).',
 								'settings.saveFailed': 'Could not save the setting.',
