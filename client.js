@@ -6,12 +6,10 @@ window.__ModuleLoader__.load({
 		const { useCallback, useEffect, useRef, useState } = React;
 
 		const NS = 'prompt-enhance';
-		// Official DeepSeek assets, extracted verbatim from the installed Harness
-		// bundles — the brand fish mark and the running whale-tail APNG. See
-		// assets/official.js for provenance; nothing here is redrawn.
-		const FISH_VIEWBOX = '0 0 23.16 17.04';
-		const FISH_RATIO = 23.16 / 17.04;
-		const FISH_PATH = "M22.9168 1.43018C22.6713 1.31018 22.5658 1.53918 22.4223 1.65519C22.3733 1.69269 22.3318 1.74169 22.2903 1.78669C21.9317 2.1697 21.5127 2.42121 20.9657 2.39121C20.1657 2.34621 19.4827 2.59771 18.8787 3.20973C18.7502 2.45521 18.3236 2.0047 17.6746 1.71569C17.3351 1.56568 16.9916 1.41518 16.7536 1.08867C16.5876 0.856163 16.5421 0.597155 16.4591 0.341647C16.4061 0.187643 16.3536 0.0301382 16.1761 0.00363739C15.9836 -0.0263635 15.9081 0.135141 15.8326 0.270145C15.5306 0.822162 15.4136 1.43018 15.4251 2.0462C15.4516 3.43174 16.0366 4.53527 17.1991 5.3203C17.3311 5.4103 17.3651 5.5003 17.3236 5.63181C17.2441 5.90231 17.1501 6.16482 17.0671 6.43533C17.0141 6.60784 16.9351 6.64584 16.7501 6.57033C16.1121 6.30383 15.5611 5.90931 15.074 5.4328C14.2475 4.63328 13.5 3.75075 12.568 3.05973C12.349 2.89822 12.13 2.74822 11.9034 2.60522C10.9524 1.68169 12.028 0.923165 12.277 0.833162C12.5375 0.739159 12.3675 0.41615 11.5259 0.42015C10.6844 0.42365 9.91439 0.705658 8.93286 1.08117C8.78935 1.13767 8.63835 1.17867 8.48384 1.21267C7.59332 1.04367 6.66829 1.00617 5.70226 1.11517C3.88321 1.31768 2.43016 2.1777 1.36213 3.64575C0.0790928 5.4103 -0.222916 7.41536 0.146595 9.50642C0.535106 11.7105 1.66014 13.535 3.38869 14.9616C5.18125 16.4406 7.24581 17.1657 9.60138 17.0266C11.0319 16.9441 12.6245 16.7526 14.421 15.2321C14.874 15.4576 15.3496 15.5476 16.1381 15.6151C16.7456 15.6716 17.3306 15.5851 17.7836 15.4911C18.4931 15.3411 18.4441 14.6841 18.1876 14.5636C16.1081 13.595 16.5646 13.9891 16.1496 13.67C17.2061 12.42 18.8202 10.1979 19.3182 7.17235C19.3672 6.83834 19.4297 6.36783 19.4222 6.09732C19.4182 5.93231 19.4562 5.86831 19.6447 5.84931C20.1657 5.78931 20.6712 5.64681 21.1357 5.3913C22.4833 4.65528 23.0268 3.44624 23.1548 1.9972C23.1738 1.77569 23.1508 1.54668 22.9168 1.43018ZM11.1749 14.4736C9.15936 12.889 8.18184 12.3675 7.77832 12.39C7.40081 12.4125 7.46881 12.8445 7.55182 13.126C7.63882 13.404 7.75182 13.5955 7.91033 13.8396C8.01983 14.0011 8.09533 14.2411 7.80083 14.4216C7.15181 14.8231 6.02327 14.2866 5.97027 14.2601C4.65673 13.4865 3.5587 12.4655 2.78467 11.069C2.03715 9.72493 1.60314 8.28289 1.53164 6.74384C1.51264 6.37233 1.62214 6.24082 1.99215 6.17332C2.47916 6.08332 2.98118 6.06432 3.46769 6.13582C5.52476 6.43633 7.27581 7.35586 8.74385 8.8129C9.58188 9.64243 10.2159 10.634 10.8689 11.6025C11.5634 12.631 12.3105 13.611 13.262 14.4146C13.598 14.6961 13.866 14.9101 14.1225 15.0681C13.349 15.1546 12.058 15.1731 11.1749 14.4746L11.1749 14.4736ZM12.141 8.25988C12.141 8.09488 12.273 7.96338 12.439 7.96338C12.4765 7.96338 12.5105 7.97088 12.541 7.98188C12.5825 7.99688 12.6205 8.01938 12.6505 8.05338C12.7035 8.10588 12.7335 8.18088 12.7335 8.25988C12.7335 8.42489 12.6015 8.55639 12.4355 8.55639C12.2695 8.55639 12.141 8.42489 12.141 8.25988ZM15.1415 9.79893C14.949 9.87793 14.7565 9.94544 14.5715 9.95294C14.2845 9.96794 13.9715 9.85143 13.8015 9.70893C13.5375 9.48742 13.3485 9.36342 13.2695 8.97691C13.2355 8.8119 13.2545 8.55639 13.2845 8.40989C13.3525 8.09438 13.277 7.89187 13.0545 7.70787C12.8735 7.55786 12.643 7.51636 12.39 7.51636C12.2955 7.51636 12.209 7.47486 12.1445 7.44136C12.039 7.38886 11.9519 7.25735 12.035 7.09585C12.0615 7.04335 12.19 6.91584 12.22 6.89334C12.5635 6.69784 12.9595 6.76184 13.326 6.90834C13.6655 7.04735 13.9225 7.30236 14.292 7.66287C14.6695 8.09838 14.7375 8.21838 14.9525 8.54539C15.1225 8.8009 15.277 9.06341 15.3831 9.36392C15.4471 9.55142 15.3641 9.70493 15.1415 9.79893Z";
+		// The idle mark used to be the official DeepSeek fish path, extracted verbatim
+		// from the installed Harness bundles. It was replaced by the local Claude
+		// starburst (see FishIcon), so the three fish constants that only fed that old
+		// drawing were removed rather than left behind as dead weight.
 		// Official "Twisting tail" contours, reused verbatim from the dsh-status-rotator
 		// plugin (0.38.0). 36 discrete outlines stepped with steps(1, end), which is
 		// what produces the spiral roll; frame order is the source's seam-matched
@@ -33,10 +31,26 @@ window.__ModuleLoader__.load({
 		// How long the "which rule ran" line stays up. Shared with its CSS animation,
 		// so the fade and the record's lifetime cannot drift apart.
 		const STATUS_VISIBLE_MS = 2600;
+		// Hover copy geometry, in px. The tip floats above the mark with a small gap;
+		// when the transient status line is already up, it clears that line instead of
+		// covering it. Rise is only the 1-frame entrance offset.
+		const TIP_GAP_PX = 8;
+		const TIP_RISE_PX = 2;
+		const STATUS_CLEARANCE_PX = 26;
+		// Same wait the host's own chip tooltips use (`delayMs={500}` on the primary
+		// controls), so hovering this mark feels like hovering the model selector.
+		const TIP_DELAY_MS = 500;
 	/**
-	 * 看门狗上限：比主机默认超时（90 秒）多留 30 秒余量，只用于把卡死的 busy 拉回可点状态。
+	 * 主机侧默认超时（`index.js` 的 `DEFAULTS.timeoutMs = 90000`）。这里只作参照：
+	 * 客户端看门狗必须比它更晚触发，否则会在主机仍然允许等待的时间内就提前放弃。
 	 */
-	const RUN_WATCHDOG_MS = 120000;
+	const HOST_DEFAULT_TIMEOUT_MS = 90000;
+	/**
+	 * 看门狗上限：比主机默认超时多留 30 秒余量，只用于把卡死的 busy 拉回可点状态。
+	 * 它不参与请求本身的超时判定——真正的中止由主机侧的 `AbortSignal.timeout` 负责，
+	 * 这里只兜住「请求既不返回、也不理会中止」的那一种情况。
+	 */
+	const RUN_WATCHDOG_MS = HOST_DEFAULT_TIMEOUT_MS + 30000;
 	/**
 	 * 失败日志：只留在内存里，最多 ERROR_LOG_LIMIT 条，供设置页查询。
 	 * 每条记录包含时间、操作类型、错误信息与必要的上下文。
@@ -84,6 +98,15 @@ window.__ModuleLoader__.load({
 			//     zero-gap row still keeps >=6px between the two, and overlap is impossible.
 			// `--dsh-pe-seat-nudge` stays as an opt-in hook for a theme that knows its own
 			// gap; it defaults to 0.
+			// Position: the host renders `conversation.input.right` BEFORE its model
+			// control, so leaving the flex order alone is what puts this seat immediately
+			// to the left of the model selector — the position the user asked for. An
+			// earlier `order:1` moved it to after the model, which landed it between the
+			// reasoning chip and the microphone; that is the reported misplacement.
+			//
+			// Stability comes from width, not from order: the seat is a fixed 22px box
+			// that renders no text inline, so typing cannot widen it and nothing in this
+			// row can be pushed sideways by the plugin itself.
 			'.dsh-pe_root{display:flex;flex:0 0 auto;align-items:center;min-width:0;max-width:100%;',
 			'margin-inline-end:6px;position:relative;transform:translateX(var(--dsh-pe-seat-nudge,0px))}',
 			// 22x22 hit target inside the 28px-tall toolbar row: comfortably clickable
@@ -151,6 +174,26 @@ window.__ModuleLoader__.load({
 			'@keyframes dsh-pe-status{0%{opacity:0;transform:translateY(2px)}6%{opacity:1;transform:none}',
 			'86%{opacity:1;transform:none}100%{opacity:0}}',
 			'@media (prefers-reduced-motion:reduce){.dsh-pe_status{animation:none}}',
+			// Hover copy. This replaces the native `title` bubble, which is drawn by the
+			// browser/OS: it appears after roughly a second, ignores the shell's theme and
+			// cannot be styled. The words are now a real node styled with the same tokens
+			// as the host's own chip tooltips (the model selector and the reasoning chip),
+			// so hovering the mark reads like the rest of the toolbar.
+			//
+			// It is absolutely positioned, so it never widens the seat and can never move
+			// the icon it belongs to — the failure mode this row already had once.
+			`.dsh-pe_tip{position:absolute;bottom:calc(100% + ${TIP_GAP_PX}px);right:0;z-index:3;`,
+			'max-width:240px;width:max-content;padding:4px 8px;border:1px solid var(--dsw-alias-border-l1);',
+			'border-radius:6px;background:var(--dsw-alias-bg-layer-2,#242424);color:var(--dsw-alias-label-primary);',
+			`font-size:11px;line-height:16px;white-space:normal;text-align:left;box-shadow:0 4px 14px rgba(0,0,0,.28);`,
+			`pointer-events:none;opacity:0;visibility:hidden;transform:translateY(${TIP_RISE_PX}px);`,
+			'transition:opacity .1s ease,visibility 0s linear .45s,transform .1s ease}',
+			'.dsh-pe_root:hover .dsh-pe_tip,.dsh-pe_root:focus-within .dsh-pe_tip{',
+			`opacity:1;visibility:visible;transform:none;transition:opacity .1s ease ${TIP_DELAY_MS}ms,visibility 0s,transform .1s ease ${TIP_DELAY_MS}ms}`,
+			// A published status line floats in the same corner for ~2.6s; lift the tip
+			// above it instead of stacking two bubbles on top of each other.
+			`.dsh-pe_root[data-status="true"] .dsh-pe_tip{bottom:calc(100% + ${TIP_GAP_PX + STATUS_CLEARANCE_PX}px)}`,
+			'@media (prefers-reduced-motion:reduce){.dsh-pe_tip{transition:none}}',
 			'.dsh-pe_sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;',
 			'clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}',
 
@@ -1472,6 +1515,9 @@ window.__ModuleLoader__.load({
 				}
 				const rev = draftRev;
 				const controller = new AbortController();
+				// 忙态起点：只用于把「请求没回来」和「状态没清干净」区分开。
+				// 记录在错误日志的 elapsedMs 里，不参与任何业务判断。
+				const startedAt = Date.now();
 				taskStore.patch(sessionId, {
 					phase: 'running',
 					failure: null,
@@ -1488,7 +1534,15 @@ window.__ModuleLoader__.load({
 				const watchdog = setTimeout(() => {
 					const current = taskStore.ensure(sessionId);
 					if (current.controller !== controller) return;
-					// 只负责把状态拉回空闲：超时引发的失败由失败路径统一记录，这里不重复记。
+					// 只负责把状态拉回空闲。这里单独记一条日志：超时被中止时，catch 走的是
+					// 「用户主动暂停」分支（failure 置空），不会写错误日志，于是「请求一直不
+					// 回来」这件事在设置页里就看不见了。带上耗时才能和「状态没清干净」区分。
+					recordEnhanceError('watchdog', t('state.watchdog', { seconds: Math.round(RUN_WATCHDOG_MS / 1000) }), {
+						sessionId,
+						elapsedMs: Date.now() - startedAt,
+						draftChars: before.length,
+						attachments: attachmentIds.length,
+					});
 					controller.abort();
 					taskStore.patch(sessionId, { phase: 'idle', controller: null, announce: t('state.cancelled') });
 				}, RUN_WATCHDOG_MS);
@@ -1632,6 +1686,9 @@ window.__ModuleLoader__.load({
 								sessionId,
 								draftChars: before.length,
 								attachments: attachmentIds.length,
+								// 这次请求实际等了多久。和 watchdog 那条日志里的 elapsedMs 对读，
+								// 就能判断「是请求慢」还是「按钮状态没被清掉」。
+								elapsedMs: Date.now() - startedAt,
 							});
 							taskStore.patch(sessionId, { failure: message });
 						}
@@ -1823,13 +1880,13 @@ window.__ModuleLoader__.load({
 					className: 'dsh-pe_root',
 					'data-prompt-enhance': '1',
 					'data-context': showContextMark ? 'true' : 'false',
+					'data-status': runStatus !== null && !busy && failure === null ? 'true' : 'false',
 				},
 				h(
 					'button',
 					{
 						type: 'button',
 						className: 'dsh-pe_button',
-						title,
 						'aria-label': title,
 						'aria-busy': busy,
 						'data-busy': busy,
@@ -1841,7 +1898,12 @@ window.__ModuleLoader__.load({
 					// twisting tail, and the two utility states keep the outline icons.
 					busy ? h(WhaleTail) : canUndo ? h(UndoIcon) : failure !== null ? h(RetryIcon) : h(FishIcon),
 				),
-				// 失败原因只走按钮自带的 title / aria-label（与增强图标的悬停提示同一套机制），
+				// The hover copy. `aria-label` above carries the same sentence for assistive
+				// tech; this node is the visible bubble, styled like the host chip tooltips.
+				// No `title` attribute any more: it would draw the OS bubble on top of this
+				// one about a second later.
+				h('span', { className: 'dsh-pe_tip', role: 'tooltip' }, title),
+				// 失败原因只走悬停气泡（.dsh-pe_tip）与 aria-label，
 				// 不再在行内渲染文字：行内文字会撑宽座位，导致图标相对麦克风漂移。
 				// 状态行仍是绝对定位：不参与行内排版，因此不会撑宽座位、不会引起漂移。
 				runStatus !== null && !busy && failure === null ? h('span', { className: 'dsh-pe_status', role: 'status' }, runStatus) : null,
@@ -3176,6 +3238,7 @@ window.__ModuleLoader__.load({
 								'state.failed': '增强失败，草稿保持不变。',
 								'state.failedWith': '点击可重新增强：上次失败原因是{reason}。',
 								'state.cancelled': '已停止增强，草稿保持不变。',
+								'state.watchdog': '请求超过{seconds}秒没有回应，已自动放开按钮，草稿保持不变。',
 								'state.stale': '增强已完成，但草稿在你离开期间被改动，结果未写入。',
 								'state.transport': '增强接口不可用（HTTP {status}），请确认插件已启用。',
 								'state.imagesSkipped': '有 {count} 张图片未能读取，本次增强未参考它们。',
@@ -3312,6 +3375,7 @@ window.__ModuleLoader__.load({
 								'state.failed': 'Enhancement failed; the draft is unchanged.',
 								'state.failedWith': 'Click to enhance again. Last failure: {reason}.',
 								'state.cancelled': 'Enhancement stopped; the draft is unchanged.',
+								'state.watchdog': 'No reply after {seconds}s; the button was released automatically and the draft is unchanged.',
 								'state.stale': 'The rewrite finished, but the draft changed while you were away, so it was not applied.',
 								'state.transport': 'The enhancement endpoint is unavailable (HTTP {status}); check that the plugin is enabled.',
 								'state.imagesSkipped': '{count} image(s) could not be read; this enhancement did not use them.',

@@ -304,6 +304,15 @@ function textOf(node) {
 		.join(' ');
 }
 
+/**
+ * The hover bubble text. The seat draws its own tooltip (a `.dsh-pe_tip` node) instead
+ * of setting `title`, so hover copy is asserted through that node.
+ */
+function tipOf(tree) {
+	const tip = flatten(tree).find((node) => node.props?.className === 'dsh-pe_tip');
+	return tip ? textOf(tip) : null;
+}
+
 // ---------------------------------------------------------------- fake fetch
 let nextResponse = null;
 const requests = [];
@@ -569,7 +578,8 @@ await test('shows an icon-only button once the draft has content', async () => {
 	// Icon-only: no visible text, the label lives in the accessible name and tooltip.
 	assert.equal(textOf(button), '');
 	assert.equal(button.props['aria-label'], 'label.idle');
-	assert.equal(button.props.title, 'label.idle');
+	assert.equal(button.props.title, undefined, 'the OS bubble is gone: hover copy is our own node');
+	assert.equal(tipOf(tree), 'label.idle');
 	const icon = flatten(button).find((node) => node.type === 'svg');
 	assert.ok(icon, 'expected an svg icon');
 	// The idle mark is the Claude starburst (local customization): a square
@@ -612,7 +622,7 @@ await test('a clarification response leaves the original draft untouched', async
 	assert.ok(mounted.rerender().tree);
 	// 澄清说明不再占位渲染：它由按钮自身的悬停提示承担，座位宽度恒定。
 	const button = findButton(mounted.rerender().tree);
-	assert.match(String(button.props.title), /state\.noRewrite/u, 'clarification is surfaced through the tooltip');
+	assert.match(String(tipOf(mounted.rerender().tree)), /state\.noRewrite/u, 'clarification is surfaced through the hover bubble');
 	assert.equal(flatten(mounted.rerender().tree).some((node) => node.props?.['data-tone'] === 'info'), false, 'no inline text may be rendered');
 });
 
@@ -720,7 +730,7 @@ await test('a failed request keeps the draft and switches to the retry mark', as
 	const button = findButton(tree);
 	assert.equal(textOf(button), '');
 	assert.equal(button.props['data-state'], 'error');
-	assert.match(button.props.title, /凭据缺失/u);
+	assert.match(String(tipOf(tree)), /凭据缺失/u, '悬停气泡给出失败原因');
 	assert.equal(helper.writes.length, 0, 'draft must be untouched on failure');
 	assert.match(textOf(tree), /凭据缺失/u);
 });
@@ -941,10 +951,10 @@ await test('a failure shows its reason on screen, not only in title', async () =
 	await sleep(0);
 	const tree = mounted.rerender().tree;
 
-	// 失败原因改由按钮自带的悬停提示与无障碍名称承担，行内不渲染任何文字，
+	// 失败原因改由悬停气泡与无障碍名称承担，行内不渲染任何文字，
 	// 这样座位宽度恒定，图标不会因失败提示而相对麦克风漂移。
 	const button = findButton(tree);
-	assert.match(String(button.props.title), /凭据缺失/u, '失败原因出现在悬停提示里');
+	assert.match(String(tipOf(tree)), /凭据缺失/u, '失败原因出现在悬停气泡里');
 	assert.match(String(button.props['aria-label']), /凭据缺失/u, '无障碍名称同步带原因');
 	assert.equal(flatten(tree).some((node) => node.props?.className === 'dsh-pe_notice'), false, '行内不再渲染提示文字');
 	const hidden = flatten(tree).find((node) => node.props?.className === 'dsh-pe_sr');
@@ -965,8 +975,8 @@ await test('a successful run in context mode is reported in the accessible name'
 	const button = findButton(tree);
 	// The test stub's `t` echoes the key and its params, so assert the call shape:
 	// the context-aware key wraps the base label with the inner text as {base}.
-	assert.match(button.props.title, /label\.contextAware/u);
-	assert.match(button.props.title, /label\.undo/u, 'the inner label must be preserved as {base}');
+	assert.match(tipOf(tree), /label\.contextAware/u);
+	assert.match(tipOf(tree), /label\.undo/u, 'the inner label must be preserved as {base}');
 });
 
 await test('a plain-mode run is not described as context-aware', async () => {
@@ -980,7 +990,7 @@ await test('a plain-mode run is not described as context-aware', async () => {
 	helper.state.draft = '增强结果';
 	helper.state.draftRev = 7;
 	const tree = mounted.rerender().tree;
-	assert.equal(findButton(tree).props.title.includes('已参考本会话上下文'), false);
+	assert.equal(tipOf(tree).includes('已参考本会话上下文'), false);
 });
 
 await test('registers a settings page in the Settings sidebar', async () => {
@@ -2146,6 +2156,10 @@ await test('composer seat stays decoupled from host geometry', () => {
 	const cssText = /const CSS = \[([\s\S]*?)\]\n\t\t\t\.join/u.exec(src)?.[1] ?? '';
 	const joined = cssText.split('\n').filter((l) => l.trim().startsWith("'")).map((l) => l.trim().replace(/^'|',?$/gu, '')).join('');
 	const rule = /\.dsh-pe_root\{([^}]*)\}/u.exec(joined)?.[1] ?? '';
+	// The host renders conversation.input.right before its model control, so the seat
+	// must keep the default flex order: any `order` override would move the icon away
+	// from "immediately before the model selector".
+	assert.equal(/order:/u.test(rule), false, 'no flex order override: the seat stays before the host model control');
 	assert.ok(/flex:0 0 auto/u.test(rule), 'seat must not shrink into neighbours');
 	assert.ok(/max-width:100%/u.test(rule), 'seat must bound its own width');
 	assert.equal(/margin-[a-z]+:-\d/u.test(rule), false, 'no negative margin');
@@ -2213,7 +2227,7 @@ await test('a refused write is logged once and keeps the retry affordance', asyn
 	assert.match(flat, /write/u, '操作类型是写回');
 	const button = findButton(tree);
 	assert.equal(button.props['data-state'], 'error', '仍显示重试图标');
-	assert.match(String(button.props.title), /state\.failedWith/u, '悬停提示走失败文案');
+	assert.match(String(tipOf(tree)), /state\.failedWith/u, '悬停气泡走失败文案');
 	assert.match(String(button.props['aria-label']), /state\.failedWith/u, '无障碍名称同步');
 });
 
@@ -2225,6 +2239,30 @@ await test('the retry hover copy names the action and the reason in both languag
 	}
 	assert.ok(matches.some((text) => /重新增强/u.test(text)), '中文说明点击会重新增强');
 	assert.ok(matches.some((text) => /enhance again/iu.test(text)), '英文说明点击会重新增强');
+});
+
+await test('the seat draws its own hover bubble instead of the OS tooltip', async () => {
+	nextResponse = { body: { ok: false, code: 'AUTH', message: '凭据缺失' } };
+	const helper = makeHelpers({ draft: '写个脚本' });
+	const mounted = mountComponent(composerRegistration(installPlugin()).component, helper.props);
+	findButton(mounted.tree).props.onClick();
+	await sleep(0);
+	const tree = mounted.rerender().tree;
+	const button = findButton(tree);
+	// 1. 不再设置 title：否则浏览器会在约 1 秒后叠加一个系统气泡。
+	assert.equal(button.props.title, undefined, 'no native title bubble');
+	// 2. 悬停气泡是座位里的真实节点，且带 role=tooltip。
+	const tip = flatten(tree).find((node) => node.props?.className === 'dsh-pe_tip');
+	assert.ok(tip !== undefined, 'expected a .dsh-pe_tip node');
+	assert.equal(tip.props.role, 'tooltip');
+	assert.match(textOf(tip), /凭据缺失/u, '气泡里就是失败原因');
+	assert.match(String(button.props['aria-label']), /凭据缺失/u, '读屏名称与气泡一致');
+	// 3. 气泡绝对定位且默认隐藏：它不可能撑宽座位，也就不可能推动图标。
+	const css = /const CSS = \[([\s\S]*?)\]\n\t\t\t\.join/u.exec(source)?.[1] ?? '';
+	assert.match(css, /\.dsh-pe_tip\{position:absolute/u, 'the bubble is out of flow');
+	assert.match(css, /opacity:0;visibility:hidden/u, 'hidden until hover');
+	assert.match(css, /\.dsh-pe_root:hover \.dsh-pe_tip/u, 'shows on hover');
+	assert.match(css, /\.dsh-pe_root:focus-within \.dsh-pe_tip/u, 'shows on keyboard focus too');
 });
 
 console.log(failures === 0 ? '\nALL CLIENT TESTS PASSED' : `\n${failures} CLIENT TEST(S) FAILED`);
