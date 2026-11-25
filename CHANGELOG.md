@@ -3,7 +3,7 @@
 本项目的所有重要改动都记录在本文件。
 
 格式遵循 [Keep a Changelog 1.1.0](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/)。
-开发期改动写在 `[Unreleased]` 段，发布时改名为 `## [X.Y.Z] - YYYY-MM-DD`；设置页的更新日志只列已发布的正式版本。
+开发期改动写在 `[Unreleased]` 段，发布时改名为 `## [X.Y.Z] - YYYY-MM-DD`；发布记录只列已发布的正式版本。
 
 ## [Unreleased]
 

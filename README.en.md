@@ -116,7 +116,7 @@ Only **non-image attachments currently in the composer** — attachments from ea
 
 `Settings → Prompt Enhance`. Five switches and two selectors (model, rule set), plus a **custom rules** entry inside the rule-set dropdown, affecting **only this button, never normal sending**.
 
-![Settings page](https://cdn.jsdelivr.net/npm/dsh-prompt-rewriter/docs/images/04-settings-en.png)
+The settings page no longer shows upstream repository links; the old screenshot has been removed from the package so it cannot document the retired UI.
 
 | Option | Default | What turning it on does |
 |---|---|---|
