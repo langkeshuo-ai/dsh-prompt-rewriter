@@ -158,9 +158,7 @@ let requests = [];
 let stored = { enhanceProvider: '', enhanceModel: '', useCustomModel: false, referenceImages: false, referenceContext: true };
 // What the Host reports about the package: the version and project URL the page
 // displays. Kept separate from `stored` because it is read-only metadata.
-let about = { version: '9.9.9', url: 'https://github.com/example/dsh-prompt-rewriter' };
-// Release notes returned by the Host. Driven per case.
-let changelog = [];
+let about = { version: '9.9.9' };
 // When set, the next settings POST is refused with this message, which is how the
 // page learns that a value it was asked to store is not acceptable.
 let refusePost = null;
@@ -180,7 +178,7 @@ globalThis.fetch = async (url, init) => {
 			}
 			stored = { ...stored, ...JSON.parse(init.body) };
 		}
-		return { ok: true, status: 200, json: async () => ({ ok: true, values: stored, about, changelog }) };
+		return { ok: true, status: 200, json: async () => ({ ok: true, values: stored, about }) };
 	}
 	return { ok: true, status: 200, json: async () => ({ ok: true, text: 'enhanced' }) };
 };
@@ -717,7 +715,7 @@ await test('every settings row carries a plain-language title', async () => {
 await test('the page shows the version the Host reports', async () => {
 	// The version must come from the package manifest via the Host, never be
 	// hard-coded in the client.
-	about = { version: '9.9.9', url: 'https://github.com/example/dsh-prompt-rewriter' };
+	about = { version: '9.9.9' };
 	stored = { enhanceProvider: '', enhanceModel: '', useCustomModel: false, referenceImages: false, referenceContext: true };
 	const settings = settingsOf(install());
 	let tree = mount(settings.component, { t });

@@ -131,10 +131,9 @@ Only **non-image attachments currently in the composer** — attachments from ea
 - Turning the model switch off does not clear your selection; flipping it back on shows the same choice.
 - Images still uploading or over the Host attachment service's per-image or per-message limit are skipped; the status area reports how many were missed. A rewrite never fails because of an image.
 - Files over the count or size limit are skipped and reported in the result status.
-- The **current version** sits in the top-right of the settings page; clicking it opens the project home page. Check it before reporting a problem — it makes the issue much easier to pin down.
+- The **current version** sits in the top-right of the settings page as plain text (it is no longer a link). Check it before reporting a problem — it makes the issue much easier to pin down.
 - **Custom rules**: pick "Custom: <name>" in the rule-set dropdown to use one. "＋ Add rule" opens two fields — a **meta prompt** on top (one click to copy; when the clipboard is unavailable the field is selected for you and the hint says to press Ctrl+C) and a paste box below. Send the meta prompt to your own AI; it returns a rule set built from your habits, preferences and memory. Paste the body back, give it a name and save. Up to 10 rules, 4000 characters each. Every entry can be **disabled or enabled**; disabling or deleting the rule in use switches the selection back to **Legacy** in the same save, so a dead selection is never left behind (a hand-edited config that disables the rule in use is refused, and the run time falls back to Legacy as well).
-- The first row is the entry point: "Star ⭐ · problems? open an issue ↗", leading to the project home page and this project's issue list.
-- The **changelog** at the bottom folds by version, newest open by default; it is read from the shipped `CHANGELOG.md`, so it works offline.
+- This build is a fork of the project, so the settings page carries no entry points back to the upstream repository: no Star link, no issue link, and no changelog panel.
 
 ## Install
 
